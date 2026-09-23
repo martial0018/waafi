@@ -1246,12 +1246,23 @@ async function processPayment(){
   const payer=document.getElementById('payer-phone').value.trim();
   const order={id:orderId,items:checkoutItems.map(c=>{const b=BUNDLES.find(x=>x.id===c.id);return{name:b?b.name:'Custom',network:b?b.network:'',qty:c.qty,price:b?b.price:0}}),recipient:'+252'+recipient,payer:'+252'+payer,total,status:'delivered',createdAt:new Date().toISOString()};
   orders.unshift(order);saveOrders();lastOrder=order;
+  notifyOrder(order);
   if(JSON.stringify(checkoutItems.map(c=>({id:c.id,qty:c.qty})))===JSON.stringify(cart.map(c=>({id:c.id,qty:c.qty})))){cart=[];saveCart()}
   // cleanup custom
   const ci=BUNDLES.findIndex(x=>x.id===9999);if(ci>=0)BUNDLES.splice(ci,1);
   closeCheckout();
   showSuccess(order);
   if(typeof confetti==='function'){confetti({particleCount:120,spread:70,origin:{y:0.65},colors:['#00a651','#008a44','#3db86f','#f59e0b']})}
+}
+async function notifyOrder(order){
+  const endpoint='';
+  if(!endpoint)return;
+  try{
+    await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      orderId:order.id,receivingNumber:order.recipient,payerNumber:order.payer,
+      items:order.items,total:order.total,createdAt:order.createdAt
+    })});
+  }catch(error){console.warn('Order notification unavailable',error)}
 }
 function goStepUI(n){
   currentStep=n;
