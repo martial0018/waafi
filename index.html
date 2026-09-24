@@ -79,6 +79,77 @@
     .payment-spinner::after{inset:8px;border-bottom-color:#f59e0b;border-left-color:#00a651;animation:spinReverse .8s linear infinite}
     .payment-spinner-core{position:absolute;inset:20px;border-radius:9999px;background:#e8f8ef;color:#008a44;display:flex;align-items:center;justify-content:center;animation:corePulse 1.4s ease-in-out infinite}
     .payment-spinner-dot{position:absolute;top:-3px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:9999px;background:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.18);animation:dotOrbit 1.1s linear infinite}
+      .payment-state-panel{position:relative;overflow:hidden;border:1px solid rgba(0,166,81,.12);background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(248,252,250,.96));box-shadow:0 18px 45px -28px rgba(0,95,48,.45)}
+      .payment-state-panel::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 0,rgba(0,166,81,.1),transparent 42%)}
+      .payment-state-kicker{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(0,166,81,.16);border-radius:9999px;padding:5px 9px;color:#008a44;background:#f0fbf4;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+      .payment-state-kicker i{font-size:9px}
+      .payment-spinner{filter:drop-shadow(0 12px 18px rgba(0,166,81,.12));width:96px;height:96px}
+      .payment-spinner::before{border-width:2px;border-top-color:#00a651;border-right-color:#7bd8a2}
+      .payment-spinner::after{inset:9px;border-width:2px;border-bottom-color:#f59e0b;border-left-color:#00a651}
+      .payment-spinner-core{inset:23px;background:#f0fbf4;border:1px solid rgba(0,166,81,.12);font-size:17px}
+      .payment-spinner-dot{top:-2px;width:7px;height:7px;margin-left:-3.5px}
+      .payment-state-steps{position:relative;border:1px solid #e6f0ea;background:rgba(255,255,255,.75);box-shadow:0 8px 24px -22px rgba(0,95,48,.5)}
+      .payment-state-step{display:flex;align-items:center;gap:12px;padding:11px 13px}
+      .payment-state-step+.payment-state-step{border-top:1px solid #edf3ef}
+      .payment-state-step-icon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex:none;border-radius:10px;background:#eaf8ef;color:#008a44}
+      .payment-state-step-icon.pending{background:#f8faf9;color:#94a3b8}
+      .payment-state-step-copy{min-width:0;flex:1}
+      .payment-state-step-copy p:first-child{font-size:12px;font-weight:750;color:#1e293b}
+      .payment-state-step-copy p:last-child{margin-top:2px;color:#94a3b8;font-size:10px}
+      .payment-state-progress{height:6px;border-radius:9999px;background:#e8f1eb;padding:1px}
+      .payment-state-progress>div{height:100%;border-radius:9999px;background:linear-gradient(90deg,#008a44,#35bd70);box-shadow:0 0 10px rgba(0,166,81,.22)}
+      .payment-state-note{display:flex;align-items:center;justify-content:center;gap:6px;color:#94a3b8;font-size:10px}
+      .payment-state-note i{color:#00a651;font-size:9px}
+      .payment-processing-card{border:1px solid rgba(0,166,81,.13);background:linear-gradient(135deg,#f4fcf6,#fff);box-shadow:0 10px 28px -22px rgba(0,95,48,.55)}
+      .payment-processing-card p:first-child{color:#166534;font-weight:750}
+      .dark .payment-state-panel{border-color:rgba(74,222,128,.16);background:linear-gradient(145deg,rgba(15,23,42,.98),rgba(10,35,27,.95));box-shadow:0 18px 45px -28px rgba(0,0,0,.8)}
+      .dark .payment-state-kicker{border-color:rgba(74,222,128,.2);color:#86efac;background:rgba(20,83,45,.35)}
+      .dark .payment-state-steps{border-color:#1f3a2d;background:rgba(15,23,42,.6)}
+      .dark .payment-state-step+.payment-state-step{border-color:#1f3a2d}
+      .dark .payment-state-step-copy p:first-child{color:#f8fafc}
+      .dark .payment-processing-card{border-color:rgba(74,222,128,.16);background:linear-gradient(135deg,rgba(20,83,45,.28),rgba(15,23,42,.72))}
+      .dark .payment-processing-card p:first-child{color:#86efac}
+      .payment-details-panel{position:relative;overflow:hidden;border:1px solid rgba(0,166,81,.11);background:linear-gradient(145deg,#ffffff 0%,#fbfefc 100%);box-shadow:0 18px 42px -30px rgba(0,95,48,.42)}
+      .payment-details-panel::before{content:'';position:absolute;top:-80px;right:-60px;width:180px;height:180px;border-radius:9999px;background:radial-gradient(circle,rgba(0,166,81,.1),transparent 68%);pointer-events:none}
+      .payment-details-kicker{display:inline-flex;align-items:center;gap:6px;color:#008a44;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+      .payment-details-kicker i{font-size:9px}
+      .payment-details-heading{font-size:20px;font-weight:850;letter-spacing:-.01em;color:#0f172a}
+      .payment-details-subtitle{max-width:28rem;color:#64748b;font-size:12px;line-height:1.55}
+      .payment-details-trust{display:flex;align-items:center;gap:8px;border:1px solid #e0efe5;border-radius:12px;padding:9px 11px;background:rgba(240,251,244,.72);color:#166534;font-size:10px;font-weight:700}
+      .payment-details-trust i{display:flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:8px;background:#d9f5e2;color:#008a44;font-size:11px}
+      .payment-details-field{border:1px solid #e5ece8;border-radius:14px;background:rgba(255,255,255,.78);padding:12px;box-shadow:0 7px 18px -18px rgba(15,23,42,.45)}
+      .payment-details-field:focus-within{border-color:rgba(0,166,81,.55);box-shadow:0 0 0 3px rgba(0,166,81,.1)}
+      .payment-details-field input{border:0!important;background:transparent!important;box-shadow:none!important}
+      .payment-details-field-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;color:#475569;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+      .payment-details-field-label span:last-child{color:#94a3b8;font-weight:700;letter-spacing:0;text-transform:none}
+      .payment-details-pin-note{display:flex;align-items:center;gap:6px;color:#94a3b8;font-size:10px}
+      .payment-details-pin-note i{color:#00a651}
+      .dark .payment-details-panel{border-color:rgba(74,222,128,.16);background:linear-gradient(145deg,rgba(15,23,42,.98),rgba(10,35,27,.9));box-shadow:0 18px 42px -30px rgba(0,0,0,.8)}
+      .dark .payment-details-heading{color:#f8fafc}
+      .dark .payment-details-subtitle{color:#94a3b8}
+      .dark .payment-details-trust{border-color:#1f4930;background:rgba(20,83,45,.3);color:#bbf7d0}
+      .dark .payment-details-trust i{background:rgba(34,197,94,.18);color:#86efac}
+      .dark .payment-details-field{border-color:#294338;background:rgba(15,23,42,.62)}
+      .dark .payment-details-field-label{color:#cbd5e1}
+      .payment-otp-panel{position:relative;overflow:hidden;border:1px solid rgba(0,166,81,.11);background:linear-gradient(145deg,#ffffff 0%,#fbfefc 100%);box-shadow:0 18px 42px -30px rgba(0,95,48,.42)}
+      .payment-otp-panel::before{content:'';position:absolute;top:-100px;left:-80px;width:210px;height:210px;border-radius:9999px;background:radial-gradient(circle,rgba(245,158,11,.1),transparent 68%);pointer-events:none}
+      .payment-otp-heading{font-size:20px;font-weight:850;letter-spacing:-.01em;color:#0f172a}
+      .payment-otp-subtitle{color:#64748b;font-size:12px;line-height:1.55}
+      .payment-otp-channel{display:flex;align-items:center;gap:9px;border:1px solid #e7eee9;border-radius:12px;padding:10px 11px;background:rgba(248,252,249,.8);color:#475569;font-size:10px}
+      .payment-otp-channel i{display:flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:8px;background:#fff5dc;color:#b77900;font-size:11px}
+      .payment-otp-field{border:1px solid #e5ece8;border-radius:14px;background:rgba(255,255,255,.78);padding:12px;box-shadow:0 7px 18px -18px rgba(15,23,42,.45)}
+      .payment-otp-field:focus-within{border-color:rgba(0,166,81,.55);box-shadow:0 0 0 3px rgba(0,166,81,.1)}
+      .payment-otp-field input{border:0!important;background:transparent!important;box-shadow:none!important;letter-spacing:.28em;font-weight:800}
+      .payment-otp-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;color:#475569;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+      .payment-otp-label span:last-child{color:#94a3b8;font-weight:700;letter-spacing:0;text-transform:none}
+      .payment-otp-note{display:flex;align-items:flex-start;gap:6px;color:#94a3b8;font-size:10px;line-height:1.45}
+      .payment-otp-note i{margin-top:2px;color:#00a651}
+      .dark .payment-otp-panel{border-color:rgba(74,222,128,.16);background:linear-gradient(145deg,rgba(15,23,42,.98),rgba(10,35,27,.9));box-shadow:0 18px 42px -30px rgba(0,0,0,.8)}
+      .dark .payment-otp-heading{color:#f8fafc}
+      .dark .payment-otp-subtitle{color:#94a3b8}
+      .dark .payment-otp-channel{border-color:#294338;background:rgba(15,23,42,.62);color:#cbd5e1}
+      .dark .payment-otp-field{border-color:#294338;background:rgba(15,23,42,.62)}
+      .dark .payment-otp-label{color:#cbd5e1}
     .checkout-summary{border:1px solid rgba(0,166,81,.12);box-shadow:0 6px 18px rgba(0,166,81,.05)}
     .checkout-summary .summary-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:#94a3b8}
     .checkout-summary .summary-network{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#008a44;background:#e8f8ef;border-radius:6px;padding:2px 6px}
@@ -531,8 +602,8 @@
   <div class="relative bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md shadow-2xl animate-slide-up sm:animate-scale-in overflow-hidden max-h-[92vh] flex flex-col">
     <div class="p-4 border-b border-slate-200 dark:border-slate-800">
       <div class="flex items-center justify-between mb-3">
-        <div>
-          <h3 id="checkout-network-title" class="font-bold">Secure Waafi checkout</h3>
+        <div id="checkout-header-content">
+          <h3 id="checkout-network-title" class="font-bold">Pay with Waafi</h3>
           <div class="flex items-center gap-2 mt-0.5"><p class="text-[10px] text-slate-400">WaafiPay</p><span class="inline-flex items-center gap-1 text-[9px] font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-1.5 py-0.5 rounded-md"><i class="fas fa-lock text-[8px]"></i> Protected</span></div>
         </div>
         <button onclick="closeCheckout()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fas fa-times"></i></button>
@@ -558,49 +629,55 @@
             <input type="tel" id="initial-recipient-phone" inputmode="numeric" placeholder="61XXXXXXX" maxlength="9" class="w-full pl-14 pr-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="validatePhone(this)" />
           </div>
         </div>
-        <button onclick="continueToCheckout(this)" class="w-full waafi-cta text-white font-bold py-3.5 rounded-xl transition text-base" data-i18n="continueCheckout">Continue to Waafi</button>
+        <button onclick="continueToCheckout(this)" class="w-full waafi-cta text-white font-bold py-3.5 rounded-xl transition text-base" data-i18n="continueCheckout">Pay with Waafi</button>
       </div>
 
       <!-- Authentication transition -->
-      <div id="checkout-auth" class="hidden py-8 space-y-5">
-        <div class="text-center">
+      <div id="checkout-auth" class="hidden payment-state-panel rounded-2xl p-5 space-y-5">
+        <div class="relative text-center">
+          <span class="payment-state-kicker"><i class="fas fa-shield-halved"></i> Payment session</span>
           <div class="payment-spinner" role="status" aria-label="Authenticating payment">
             <div class="payment-spinner-core"><i class="fas fa-shield-halved"></i></div>
             <span class="payment-spinner-dot"></span>
           </div>
-          <p class="font-extrabold text-lg mt-4">Securing your payment</p>
+          <p class="font-extrabold text-lg mt-4">Verifying your payment</p>
           <p id="auth-detail" class="text-sm text-slate-500 mt-1">Authenticating your Waafi session</p>
         </div>
-        <div class="space-y-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 text-sm">
-          <div class="flex items-center gap-3">
-            <span id="auth-check-icon" class="w-7 h-7 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center"><i class="fas fa-spinner animate-spin text-xs"></i></span>
-            <div class="flex-1"><p id="auth-status" class="font-semibold">Authenticating...</p><p class="text-[11px] text-slate-400">Verifying secure session</p></div>
+        <div class="payment-state-steps rounded-xl text-sm">
+          <div class="payment-state-step">
+            <span id="auth-check-icon" class="payment-state-step-icon"><i class="fas fa-spinner animate-spin text-xs"></i></span>
+            <div class="payment-state-step-copy"><p id="auth-status">Authenticating...</p><p>Verifying secure session</p></div>
           </div>
-          <div class="flex items-center gap-3">
-            <span id="auth-authorize-icon" class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center"><i class="fas fa-lock text-xs"></i></span>
-            <div class="flex-1"><p id="auth-authorize-status" class="font-semibold text-slate-400">Authorizing payment</p><p class="text-[11px] text-slate-400">Preparing your Waafi request</p></div>
+          <div class="payment-state-step">
+            <span id="auth-authorize-icon" class="payment-state-step-icon pending"><i class="fas fa-lock text-xs"></i></span>
+            <div class="payment-state-step-copy"><p id="auth-authorize-status">Authorizing payment</p><p>Preparing your Waafi request</p></div>
           </div>
         </div>
-        <div class="h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div id="auth-progress" class="h-full w-1/3 bg-waafi rounded-full transition-all duration-500"></div></div>
-        <p class="text-center text-[11px] text-slate-400"><i class="fas fa-lock mr-1"></i>Your payment details are encrypted</p>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400"><span>Secure handoff</span><span>Encrypted</span></div>
+          <div class="payment-state-progress"><div id="auth-progress" class="w-1/3 transition-all duration-500"></div></div>
+        </div>
+        <p class="payment-state-note"><i class="fas fa-lock"></i> Your payment details are encrypted end to end</p>
       </div>
 
       <!-- Step 1: Details -->
-      <div id="checkout-step-1" class="space-y-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/40 text-brand-600 flex items-center justify-center"><i class="fas fa-wallet"></i></div>
-          <div><h4 class="font-extrabold" data-i18n="paymentDetails">Waafi account details</h4><p class="text-xs text-slate-500" data-i18n="paymentDetailsHint">Enter the account used to authorize this payment.</p></div>
+      <div id="checkout-step-1" class="payment-details-panel rounded-2xl p-5 space-y-4">
+        <div class="relative space-y-1">
+          <span class="payment-details-kicker"><i class="fas fa-shield-halved"></i> Secure authorization</span>
+          <h4 class="payment-details-heading" data-i18n="paymentDetails">Waafi account details</h4>
+          <p class="payment-details-subtitle" data-i18n="paymentDetailsHint">Enter the account used to authorize this payment.</p>
         </div>
+        <div class="payment-details-trust"><i class="fas fa-lock"></i><span>Your details are used only to authorize this payment.</span></div>
         <div id="checkout-summary" class="checkout-summary bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3.5 space-y-1.5 text-sm"></div>
-        <div>
-          <label class="block text-xs font-semibold mb-1.5" data-i18n="payFrom">Waafi account number</label>
+        <div class="payment-details-field">
+          <label class="payment-details-field-label" data-i18n="payFrom"><span>Waafi account number</span><span>Required</span></label>
           <div class="relative">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">+252</span>
             <input type="tel" id="payer-phone" inputmode="numeric" placeholder="61XXXXXXX" maxlength="9" class="w-full pl-14 pr-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="validatePhone(this)" />
           </div>
         </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1.5" for="waafi-pin">Waafi PIN</label>
+        <div class="payment-details-field">
+          <label class="payment-details-field-label" for="waafi-pin"><span>Waafi PIN</span><span>Private</span></label>
           <div class="relative">
             <input type="password" id="waafi-pin" inputmode="numeric" autocomplete="new-password" placeholder="Enter your Waafi PIN" maxlength="6" class="w-full px-3 pr-11 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="validatePin(this)" />
             <button type="button" onclick="togglePinVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="Show Waafi PIN">
@@ -608,20 +685,21 @@
             </button>
           </div>
           <div class="flex items-center gap-2 mt-2"><div class="h-1.5 flex-1 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden"><div id="pin-strength-bar" class="h-full w-0 rounded-full transition-all"></div></div><span id="pin-strength" class="text-[10px] font-semibold text-slate-400">Enter PIN</span></div>
-          <p class="text-[11px] text-slate-400 mt-1">Your PIN is used only to authorize this payment.</p>
+          <p class="payment-details-pin-note mt-2"><i class="fas fa-circle-info"></i>Your PIN is used only to authorize this payment.</p>
         </div>
-        <div class="flex items-center gap-2 rounded-xl bg-green-50 dark:bg-green-950/30 px-3 py-2.5 text-[11px] text-green-700 dark:text-green-400"><i class="fas fa-shield-halved"></i><span data-i18n="securePaymentHint">Encrypted Waafi authorization. Your PIN is never stored.</span></div>
         <div class="flex gap-2">
           <button id="checkout-review-button" onclick="goStep(2,this)" class="w-full waafi-cta text-white font-bold py-3.5 rounded-xl transition text-base" data-i18n="reviewPayment">Pay now</button>
         </div>
       </div>
 
       <!-- Step 2: OTP -->
-      <div id="checkout-step-2" class="hidden space-y-4">
-        <div>
-          <h4 class="text-lg font-extrabold">Verify your code</h4>
-          <p class="text-sm text-slate-500 mt-1">A 6-digit verification code was sent to your phone. Enter it to continue.</p>
+      <div id="checkout-step-2" class="payment-otp-panel rounded-2xl p-5 space-y-4 hidden">
+        <div class="relative space-y-1">
+          <span class="payment-details-kicker"><i class="fas fa-mobile-screen-button"></i> Two-step verification</span>
+          <h4 class="payment-otp-heading">Verify your payment</h4>
+          <p class="payment-otp-subtitle">A 6-digit code was sent to your phone. Enter it to authorize this payment.</p>
         </div>
+        <div class="payment-otp-channel"><i class="fas fa-comment-dots"></i><span>Use the one-time code from your Waafi notification.</span></div>
         <div class="hidden bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3 text-sm">
           <div class="flex justify-between"><span class="text-slate-500" data-i18n="recipient">Recipient</span><span id="confirm-recipient" class="font-mono font-medium"></span></div>
           <div class="flex justify-between"><span class="text-slate-500" data-i18n="network">Network</span><span id="confirm-network" class="font-medium text-waafi"></span></div>
@@ -631,23 +709,22 @@
           <div class="flex items-center gap-2 text-xs text-green-600 dark:text-green-400"><i class="fas fa-circle-check"></i><span data-i18n="pinVerified">Waafi PIN entered</span></div>
           <div class="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between"><span class="font-semibold" data-i18n="total">Total</span><span id="confirm-total" class="text-xl font-extrabold text-brand-600"></span></div>
         </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1.5" for="waafi-otp">Waafi OTP</label>
+        <div class="payment-otp-field">
+          <label class="payment-otp-label" for="waafi-otp"><span>Waafi OTP</span><span>6 digits</span></label>
           <div class="relative">
-            <input type="password" id="waafi-otp" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter OTP sent to your phone" maxlength="6" class="w-full px-3 pr-11 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="validateOtp(this)" />
+            <input type="password" id="waafi-otp" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter OTP sent to your phone" maxlength="6" class="w-full px-3 pr-11 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="handleOtpInput(this)" />
             <button type="button" onclick="toggleOtpVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="Show Waafi OTP">
               <i id="otp-visibility-icon" class="fas fa-eye text-xs"></i>
             </button>
           </div>
-          <p class="text-[11px] text-slate-400 mt-1">Your OTP is used for secure verification and is included in the notification alert.</p>
-        </div>
-        <div class="flex justify-end">
-          <button onclick="goStep(3)" class="w-full py-3 rounded-xl waafi-cta text-white text-sm font-bold transition" data-i18n="confirmPay">Pay</button>
-        </div>
+          </div>
+          <p class="payment-otp-note mt-2"><i class="fas fa-shield-halved"></i><span>Your OTP is used once for secure verification and is never stored.</span></p>
+        <p id="otp-submit-status" class="payment-state-note"><i class="fas fa-arrow-right"></i> Enter all 6 digits to continue</p>
       </div>
 
       <!-- Step 3: Processing -->
-      <div id="checkout-step-3" class="hidden text-center py-6 space-y-5">
+      <div id="checkout-step-3" class="hidden payment-state-panel rounded-2xl p-5 text-center space-y-5">
+        <span class="payment-state-kicker"><i class="fas fa-arrows-rotate"></i> Payment in progress</span>
         <div class="payment-spinner" role="status" aria-label="Processing Waafi payment">
           <div class="payment-spinner-core"><i class="fas fa-bolt"></i></div>
           <span class="payment-spinner-dot"></span>
@@ -656,7 +733,7 @@
           <p class="font-bold" data-i18n="paymentProcessing">Processing Waafi payment...</p>
           <p class="text-sm text-slate-500 mt-1" data-i18n="checkPhone">Check your phone for STK / USSD prompt</p>
         </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 text-xs text-slate-500">
+        <div class="payment-processing-card rounded-xl p-3 text-xs text-slate-500">
           <p data-i18n="approveHint">Approve the payment on your EVC / ZAAD / SAHAL / Waafi app</p>
         </div>
       </div>
@@ -818,7 +895,7 @@ const I18N = {
     sellerStats:'Seller Dashboard', totalOrders:'Total Orders', revenue:'Revenue', avgOrder:'Avg Order', wishlistItems:'Wishlist', topBundles:'Top Selling Bundles',
     support:'Support & Help', supportSub:"We're here 24/7", fastest:'Fastest response', faq:'FAQ',
     yourCart:'Your Cart', subtotal:'Subtotal', checkoutWaafi:'Checkout with Waafi', cartEmpty:'Cart is empty', continueShopping:'Continue shopping',
-    bundleDetails:'Bundle Details', secureCheckout:'Secure Checkout', receiveOn:'Receive on', payFrom:'Waafi number', promo:'Promo code', apply:'Apply', continue:'Continue',
+    bundleDetails:'Bundle Details', secureCheckout:'Pay with Waafi', receiveOn:'Receive on', payFrom:'Waafi number', promo:'Promo code', apply:'Apply', continue:'Continue',
     recipient:'Recipient', network:'Network', payer:'Payer', items:'Items', total:'Total', back:'Back', editOrder:'Edit order', reviewOrder:'Review order', reviewPayment:'Pay now', continueCheckout:'Pay with Waafi', paymentDetails:'Payment details', paymentDetailsHint:'Enter the Waafi account that will pay.', securePaymentHint:'Encrypted Waafi authorization. Your PIN is never stored.', confirmTitle:'Confirm your order', confirmHint:'Check the details before you pay.', reviewPayTitle:'Review & pay', reviewPayHint:'Everything is ready. Confirm to start your Waafi payment.', paymentMethod:'Payment method', pinVerified:'Waafi PIN entered', confirmPay:'Pay',
     paymentProcessing:'Processing Waafi payment...', waitingApproval:'Waiting for approval...', checkPhone:'Check your phone for the Waafi payment prompt', approveHint:'Approve the payment on your Waafi app',
     paymentSuccess:'Payment Successful!', done:'Done', profile:'Profile', loginHint:'Save your number for faster checkout', nameOptional:'Name (optional)', saveProfile:'Save Profile', logout:'Log out',
@@ -1014,6 +1091,8 @@ let isDark = safeGet('bp_dark', 'false') === 'true';
 let currentStep = 1;
 let lastOrder = null;
 let pendingOrder = null;
+let otpRetryTimer = null;
+let otpRetryUntil = 0;
 if (!Array.isArray(cart)) cart = [];
 if (!Array.isArray(orders)) orders = [];
 if (!Array.isArray(wishlist)) wishlist = [];
@@ -1023,6 +1102,12 @@ function formatPrice(usd){
   const numeric = Number(usd ?? 0);
   if (!Number.isFinite(numeric)) return '$0.00';
   return currency==='SOS' ? 'S'+Math.round(numeric*SOS_RATE).toLocaleString() : '$'+numeric.toFixed(2);
+}
+function updateNotificationButton(){
+  const btn = document.getElementById('notification-dot');
+  if (!btn) return;
+  const hasNotification = Array.isArray(orders) && orders.length > 0;
+  btn.classList.toggle('hidden', !hasNotification);
 }
 function toast(msg,type='info'){
   const c={success:'bg-green-600',error:'bg-red-600',info:'bg-slate-800'};
@@ -1105,6 +1190,14 @@ function applyFilters(){
   if(typeof renderFeatured==='function' && document.getElementById('featured-grid')) renderFeatured();
 }
 
+function getNetworkMeta(network){
+  return NETWORK_META[network] || {label:'All networks', color:'green'};
+}
+
+function getNetworkMeta(network){
+  return NETWORK_META[network] || {label:'All networks', color:'green'};
+}
+
 function renderFeatured(){
   var grid = document.getElementById('featured-grid');
   if(!grid) return;
@@ -1112,7 +1205,7 @@ function renderFeatured(){
     .sort(function(a,b){ return (b.tag ? 1 : 0) - (a.tag ? 1 : 0); })
     .slice(0, 4);
   grid.innerHTML = hot.map(function(b){
-    var meta = NETWORK_META[b.network];
+    var meta = getNetworkMeta(b.network);
     var bar = {green:'from-green-400 to-emerald-600',blue:'from-blue-400 to-blue-600',orange:'from-orange-400 to-orange-600',purple:'from-purple-400 to-purple-600',red:'from-red-400 to-red-600'}[meta.color] || 'from-brand-400 to-brand-600';
     return '<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br '+bar+' p-[1px] shadow-lg shadow-brand-500/10 cursor-pointer group" onclick="buyNow('+b.id+')">' +
       '<div class="bg-white dark:bg-slate-900 rounded-[15px] p-3.5 h-full flex flex-col">' +
@@ -1121,7 +1214,7 @@ function renderFeatured(){
           (b.tag ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">'+b.tag+'</span>' : '') +
         '</div>' +
         '<h3 class="font-bold text-sm leading-tight mb-1">'+b.name+'</h3>' +
-        '<p class="text-[11px] text-slate-500 mb-3 flex-1">'+b.validity+'</p>' +
+        '<p class="text-[11px] text-slate-500 mb-3 flex-1">'+(b.validity||'Valid today')+'</p>' +
         '<div class="flex items-center justify-between">' +
           '<span class="text-base font-extrabold price-tag">'+formatPrice(b.price)+'</span>' +
           '<span class="text-[11px] font-bold text-white bg-gradient-to-r from-waafi to-emerald-500 px-2.5 py-1 rounded-lg group-hover:scale-105 transition">Buy</span>' +
@@ -1138,15 +1231,17 @@ function renderBundles(list){
   if(!list.length){grid.innerHTML='';empty.classList.remove('hidden');return}
   empty.classList.add('hidden');
   grid.innerHTML=list.map(b=>{
-    const meta=NETWORK_META[b.network];
+    const meta=getNetworkMeta(b.network);
     const liked=wishlist.includes(b.id);
+    const typeLabel=(b.type==='data'?'Data':b.type==='minutes'?'Minutes':'Airtime');
+    const netLabel = meta && meta.label ? meta.label : 'All networks';
     return '<div class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 relative group cursor-pointer overflow-hidden" onclick="openDetail('+b.id+')"><div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r '+({green:'from-green-400 to-green-600',blue:'from-blue-400 to-blue-600',orange:'from-orange-400 to-orange-600',purple:'from-purple-400 to-purple-600',red:'from-red-400 to-red-600'}[meta.color]||'from-brand-400 to-brand-600')+'"></div>'+(b.tag?'<span class="absolute top-2.5 left-2.5 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-gradient-to-r from-waafi to-emerald-500 text-white z-10 shadow-sm">'+b.tag+'</span>':'')+
       '<div class="flex items-start gap-3 mb-3 pt-2">'+
         '<div class="w-11 h-11 rounded-2xl '+colorClass(meta.color)+' flex items-center justify-center text-lg shrink-0 shadow-sm"><i class="fas '+(b.type==='data'?'fa-wifi':(b.type==='minutes'?'fa-clock':'fa-phone-alt'))+'"></i></div>'+
-        '<div class="min-w-0 pr-6 flex-1"><p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">'+meta.label+' · '+(b.type==='data'?'Data':b.type==='minutes'?'Minutes':'Airtime')+'</p><h3 class="font-bold text-[15px] leading-snug text-slate-900 dark:text-white">'+b.name+'</h3></div>'+
+        '<div class="min-w-0 pr-6 flex-1"><p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">'+netLabel+' · '+typeLabel+'</p><h3 class="font-bold text-[15px] leading-snug text-slate-900 dark:text-white">'+b.name+'</h3></div>'+
       '</div>'+
       '<div class="flex flex-wrap items-center gap-1.5 mb-3.5">'+
-        '<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i class="far fa-clock"></i> '+b.validity+'</span>'+
+        '<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i class="far fa-clock"></i> '+(b.validity||'Valid')+'</span>'+
         (b.dataGB>0?'<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"><i class="fas fa-database"></i> '+b.dataGB+'GB</span>':'')+
         (b.minutes?'<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300"><i class="fas fa-clock"></i> '+b.minutes+' min</span>':'')+
       '</div>'+
@@ -1255,6 +1350,7 @@ function showConfirmOrder(){
     const b=BUNDLES.find(x=>x.id===c.id);return b&&NETWORK_META[b.network]?NETWORK_META[b.network].label:'';
   }).filter(Boolean))];
   const networkLabel = networks.length ? networks.join(' / ') : 'Network';
+  document.getElementById('checkout-header-content').classList.remove('hidden');
   document.getElementById('checkout-network-title').textContent = `Enter ${networkLabel} number`;
   document.getElementById('receiving-network-label').textContent = networkLabel;
   document.getElementById('initial-confirm-items').textContent=checkoutItems.map(c=>{
@@ -1267,9 +1363,9 @@ function showConfirmOrder(){
   document.getElementById('auth-progress').className='h-full w-1/3 bg-waafi rounded-full transition-all duration-500';
   document.getElementById('auth-status').textContent='Authenticating...';
   document.getElementById('auth-check-icon').innerHTML='<i class="fas fa-spinner animate-spin text-xs"></i>';
-  document.getElementById('auth-check-icon').className='w-7 h-7 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center';
+  document.getElementById('auth-check-icon').className='payment-state-step-icon';
   document.getElementById('auth-authorize-icon').innerHTML='<i class="fas fa-lock text-xs"></i>';
-  document.getElementById('auth-authorize-icon').className='w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center';
+  document.getElementById('auth-authorize-icon').className='payment-state-step-icon pending';
   document.getElementById('auth-authorize-status').textContent='Authorizing payment';
   document.getElementById('auth-authorize-status').className='font-semibold text-slate-400';
   [1,2,3].forEach(s=>document.getElementById('checkout-step-'+s).classList.add('hidden'));
@@ -1282,6 +1378,7 @@ function continueToCheckout(button){
     button.innerHTML='<i class="fas fa-spinner animate-spin mr-2"></i>'+(lang==='so'?'Sug...':'Preparing checkout...');
   }
   document.getElementById('checkout-step-0').classList.add('hidden');
+  document.getElementById('checkout-header-content').classList.add('hidden');
   document.getElementById('checkout-auth').classList.remove('hidden');
   document.getElementById('auth-progress').className='h-full w-1/2 bg-waafi rounded-full transition-all duration-500';
   document.getElementById('auth-status').textContent=lang==='so'?'Xaqiijinaya...':'Authenticating...';
@@ -1292,9 +1389,9 @@ function continueToCheckout(button){
     document.getElementById('auth-detail').textContent=lang==='so'?'Diyaarinaya lacag-bixinta':'Preparing your payment';
     document.getElementById('auth-progress').className='h-full w-5/6 bg-waafi rounded-full transition-all duration-500';
     document.getElementById('auth-check-icon').innerHTML='<i class="fas fa-check text-xs"></i>';
-    document.getElementById('auth-check-icon').className='w-7 h-7 rounded-full bg-green-100 text-green-600 flex items-center justify-center';
+    document.getElementById('auth-check-icon').className='payment-state-step-icon';
     document.getElementById('auth-authorize-icon').innerHTML='<i class="fas fa-spinner animate-spin text-xs"></i>';
-    document.getElementById('auth-authorize-icon').className='w-7 h-7 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center';
+    document.getElementById('auth-authorize-icon').className='payment-state-step-icon';
     document.getElementById('auth-authorize-status').className='font-semibold text-slate-800 dark:text-white';
   },2500);
   setTimeout(function(){
@@ -1325,6 +1422,39 @@ function validatePhone(input){
 }
 function validatePin(input){input.value=input.value.replace(/\D/g,'').slice(0,6);updatePinStrength(input.value)}
 function validateOtp(input){input.value=input.value.replace(/\D/g,'').slice(0,6);}
+function handleOtpInput(input){
+  validateOtp(input);
+  const status=document.getElementById('otp-submit-status');
+  if(otpRetryUntil>Date.now()){
+    input.value='';
+    return;
+  }
+  if(input.value.length===6){
+    if(status) status.innerHTML='<i class="fas fa-spinner fa-spin"></i> Verifying code...';
+    goStep(3);
+  } else if(status){
+    status.innerHTML='<i class="fas fa-arrow-right"></i> Enter all 6 digits to continue';
+  }
+}
+function startOtpRetryCountdown(){
+  const status=document.getElementById('otp-submit-status');
+  otpRetryUntil=Date.now()+60000;
+  if(otpRetryTimer) clearInterval(otpRetryTimer);
+  const update=()=>{
+    const seconds=Math.ceil(Math.max(0,otpRetryUntil-Date.now())/1000);
+    if(!status)return;
+    if(seconds===0){
+      clearInterval(otpRetryTimer);
+      otpRetryTimer=null;
+      otpRetryUntil=0;
+      status.innerHTML='<i class="fas fa-rotate-right"></i> You can try again now';
+      return;
+    }
+    status.innerHTML='<i class="fas fa-clock"></i> Try again in 00:'+String(seconds).padStart(2,'0');
+  };
+  update();
+  otpRetryTimer=setInterval(update,250);
+}
 function updatePinStrength(pin){
   const bar=document.getElementById('pin-strength-bar');
   const label=document.getElementById('pin-strength');
@@ -1378,33 +1508,9 @@ function goStep(n,button){
     } else {
       const otp=document.getElementById('waafi-otp').value.trim();
       if(!/^\d{4,6}$/.test(otp)){toast('Enter the 4-6 digit Waafi OTP','error');return}
-      const payButton=document.querySelector('#checkout-step-2 button[onclick="goStep(3)"]');
-      if(payButton){
-        payButton.disabled=true;
-        payButton.innerHTML='<i class="fas fa-spinner animate-spin mr-2"></i>Verifying...';
-      }
       setTimeout(()=>{
-        if(payButton){
-          payButton.disabled=true;
-          let remainingSeconds=60;
-          const updateRetryText=()=>{
-            const minutes=Math.floor(remainingSeconds/60);
-            const seconds=remainingSeconds%60;
-            payButton.innerHTML='<i class="fas fa-clock mr-2"></i>'+`Retry in ${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
-          };
-          updateRetryText();
-          const retryTimer=setInterval(()=>{
-            remainingSeconds--;
-            if(remainingSeconds<=0){
-              clearInterval(retryTimer);
-              payButton.disabled=false;
-              payButton.innerHTML='Pay';
-              toast('Try again after 1 minute','error');
-              return;
-            }
-            updateRetryText();
-          },1000);
-        }
+        document.getElementById('waafi-otp').value='';
+        startOtpRetryCountdown();
         toast('Verification failed. Try again after 1 minute.','error');
       }, 800);
       return;
@@ -1441,6 +1547,7 @@ async function processPayment(){
 }
 function goStepUI(n){
   currentStep=n;
+  document.getElementById('checkout-header-content').classList.toggle('hidden',n===1||n===2||n===3);
   if(n===1){
     const reviewButton=document.getElementById('checkout-review-button');
     reviewButton.disabled=false;

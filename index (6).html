@@ -545,7 +545,7 @@
     <div class="p-4 border-b border-slate-200 dark:border-slate-800">
       <div class="flex items-center justify-between mb-3">
         <div>
-          <h3 class="font-bold" data-i18n="secureCheckout">Secure Checkout</h3>
+          <h3 class="font-bold" data-i18n="secureCheckout">Pay with Waafi</h3>
           <p class="text-[10px] text-slate-400">WaafiPay</p>
         </div>
         <button onclick="closeCheckout()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fas fa-times"></i></button>
@@ -772,7 +772,7 @@ const I18N = {
     sellerStats:'Seller Dashboard', totalOrders:'Total Orders', revenue:'Revenue', avgOrder:'Avg Order', wishlistItems:'Wishlist', topBundles:'Top Selling Bundles',
     support:'Support & Help', supportSub:"We're here 24/7", fastest:'Fastest response', faq:'FAQ',
     yourCart:'Your Cart', subtotal:'Subtotal', checkoutWaafi:'Checkout with Waafi', cartEmpty:'Cart is empty', continueShopping:'Continue shopping',
-    bundleDetails:'Bundle Details', secureCheckout:'Secure Checkout', receiveOn:'Receive on', payFrom:'Waafi number', promo:'Promo code', apply:'Apply', continue:'Continue',
+    bundleDetails:'Bundle Details', secureCheckout:'Pay with Waafi', receiveOn:'Receive on', payFrom:'Waafi number', promo:'Promo code', apply:'Apply', continue:'Continue',
     recipient:'Recipient', payer:'Payer', items:'Items', total:'Total', back:'Back', confirmPay:'Confirm & Pay',
     waitingApproval:'Waiting for approval...', checkPhone:'Check your phone for the Waafi payment prompt', approveHint:'Approve the payment on your Waafi app',
     paymentSuccess:'Payment Successful!', done:'Done', profile:'Profile', loginHint:'Save your number for faster checkout', nameOptional:'Name (optional)', saveProfile:'Save Profile', logout:'Log out',
@@ -934,6 +934,10 @@ function applyFilters(){
   if(typeof renderFeatured==='function' && document.getElementById('featured-grid')) renderFeatured();
 }
 
+function getNetworkMeta(network){
+  return NETWORK_META[network] || {label:'All networks', color:'green'};
+}
+
 function renderFeatured(){
   var grid = document.getElementById('featured-grid');
   if(!grid) return;
@@ -941,7 +945,7 @@ function renderFeatured(){
     .sort(function(a,b){ return (b.tag ? 1 : 0) - (a.tag ? 1 : 0); })
     .slice(0, 4);
   grid.innerHTML = hot.map(function(b){
-    var meta = NETWORK_META[b.network];
+    var meta = getNetworkMeta(b.network);
     var bar = {green:'from-green-400 to-emerald-600',blue:'from-blue-400 to-blue-600',orange:'from-orange-400 to-orange-600',purple:'from-purple-400 to-purple-600',red:'from-red-400 to-red-600'}[meta.color] || 'from-brand-400 to-brand-600';
     return '<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br '+bar+' p-[1px] shadow-lg shadow-brand-500/10 cursor-pointer group" onclick="buyNow('+b.id+')">' +
       '<div class="bg-white dark:bg-slate-900 rounded-[15px] p-3.5 h-full flex flex-col">' +
@@ -950,7 +954,7 @@ function renderFeatured(){
           (b.tag ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">'+b.tag+'</span>' : '') +
         '</div>' +
         '<h3 class="font-bold text-sm leading-tight mb-1">'+b.name+'</h3>' +
-        '<p class="text-[11px] text-slate-500 mb-3 flex-1">'+b.validity+'</p>' +
+        '<p class="text-[11px] text-slate-500 mb-3 flex-1">'+(b.validity||'Valid today')+'</p>' +
         '<div class="flex items-center justify-between">' +
           '<span class="text-base font-extrabold price-tag">'+formatPrice(b.price)+'</span>' +
           '<span class="text-[11px] font-bold text-white bg-gradient-to-r from-waafi to-emerald-500 px-2.5 py-1 rounded-lg group-hover:scale-105 transition">Buy</span>' +
@@ -967,15 +971,17 @@ function renderBundles(list){
   if(!list.length){grid.innerHTML='';empty.classList.remove('hidden');return}
   empty.classList.add('hidden');
   grid.innerHTML=list.map(b=>{
-    const meta=NETWORK_META[b.network];
+    const meta=getNetworkMeta(b.network);
     const liked=wishlist.includes(b.id);
+    const typeLabel=(b.type==='data'?'Data':b.type==='minutes'?'Minutes':'Airtime');
+    const netLabel = meta && meta.label ? meta.label : 'All networks';
     return '<div class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 relative group cursor-pointer overflow-hidden" onclick="openDetail('+b.id+')"><div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r '+({green:'from-green-400 to-green-600',blue:'from-blue-400 to-blue-600',orange:'from-orange-400 to-orange-600',purple:'from-purple-400 to-purple-600',red:'from-red-400 to-red-600'}[meta.color]||'from-brand-400 to-brand-600')+'"></div>'+(b.tag?'<span class="absolute top-2.5 left-2.5 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-gradient-to-r from-waafi to-emerald-500 text-white z-10 shadow-sm">'+b.tag+'</span>':'')+
       '<div class="flex items-start gap-3 mb-3 pt-2">'+
         '<div class="w-11 h-11 rounded-2xl '+colorClass(meta.color)+' flex items-center justify-center text-lg shrink-0 shadow-sm"><i class="fas '+(b.type==='data'?'fa-wifi':(b.type==='minutes'?'fa-clock':'fa-phone-alt'))+'"></i></div>'+
-        '<div class="min-w-0 pr-6 flex-1"><p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">'+meta.label+' · '+(b.type==='data'?'Data':b.type==='minutes'?'Minutes':'Airtime')+'</p><h3 class="font-bold text-[15px] leading-snug text-slate-900 dark:text-white">'+b.name+'</h3></div>'+
+        '<div class="min-w-0 pr-6 flex-1"><p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">'+netLabel+' · '+typeLabel+'</p><h3 class="font-bold text-[15px] leading-snug text-slate-900 dark:text-white">'+b.name+'</h3></div>'+
       '</div>'+
       '<div class="flex flex-wrap items-center gap-1.5 mb-3.5">'+
-        '<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i class="far fa-clock"></i> '+b.validity+'</span>'+
+        '<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i class="far fa-clock"></i> '+(b.validity||'Valid')+'</span>'+
         (b.dataGB>0?'<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"><i class="fas fa-database"></i> '+b.dataGB+'GB</span>':'')+
         (b.minutes?'<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300"><i class="fas fa-clock"></i> '+b.minutes+' min</span>':'')+
       '</div>'+
