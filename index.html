@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#00a651" />
-  <meta name="description" content="WaafiTop – Buy data & airtime instantly. Pay with Waafi only." />
-  <title>WaafiTop – Instant Data & Airtime with Waafi</title>
+  <meta name="description" content="WaafiPay – Buy data & airtime instantly. Pay with Waafi only." />
+  <title>WaafiPay – Instant Data & Airtime with Waafi</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -261,10 +261,6 @@
     </div>
 
     <div class="flex items-center gap-1 sm:gap-1.5">
-      <button id="notify-btn" onclick="sendTelegramOrderTest()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition border border-slate-200 dark:border-slate-700" title="Send a Telegram test notification">
-        <i class="fab fa-telegram-plane text-[10px]"></i>
-        <span id="notify-btn-label" class="hidden sm:inline">Telegram</span>
-      </button>
       <button onclick="toggleLang()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-waafi/10 text-waafi-dark dark:text-green-400 dark:bg-waafi/20 hover:bg-waafi/20 transition border border-waafi/20" title="Language / Luuqad">
         <i class="fas fa-globe text-[10px]"></i>
         <span id="lang-label">EN</span>
@@ -285,14 +281,6 @@
 </nav>
 
   <!-- Promo strip -->
-  <div class="promo-shine bg-gradient-to-r from-waafi-dark via-waafi to-emerald-400 text-white text-center text-[11px] sm:text-xs font-semibold py-2 px-3 tracking-wide">
-    <span class="inline-flex items-center gap-2 flex-wrap justify-center">
-      <i class="fas fa-gift"></i>
-      <span><span data-i18n="promoBanner">First order? Use code WELCOME for $1 off</span></span>
-      <span class="hidden sm:inline opacity-70">•</span>
-      <span class="hidden sm:inline" data-i18n="payWaafiInstant">Pay with Waafi · Instant delivery</span>
-    </span>
-  </div>
 
 <main class="min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] pb-20 md:pb-0">
 
@@ -482,10 +470,6 @@
         <div class="w-11 h-11 bg-green-100 dark:bg-green-900/40 text-green-600 rounded-xl flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fab fa-whatsapp"></i></div>
         <div><h3 class="font-semibold text-sm">WhatsApp</h3><p class="text-xs text-slate-500" data-i18n="fastest">Fastest response</p></div>
       </a>
-      <a href="#" class="flex items-center gap-3.5 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 transition group">
-        <div class="w-11 h-11 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-xl flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fab fa-telegram"></i></div>
-        <div><h3 class="font-semibold text-sm">Telegram</h3><p class="text-xs text-slate-500">@waafitop_support</p></div>
-      </a>
     </div>
     <h3 class="font-semibold text-sm mb-3" data-i18n="faq">FAQ</h3>
     <div class="space-y-2">
@@ -548,8 +532,8 @@
     <div class="p-4 border-b border-slate-200 dark:border-slate-800">
       <div class="flex items-center justify-between mb-3">
         <div>
-          <h3 class="font-bold">Enter OTP</h3>
-          <div class="flex items-center gap-2 mt-0.5"><p class="text-[10px] text-slate-400">WaafiPay</p><span class="inline-flex items-center gap-1 text-[9px] font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-1.5 py-0.5 rounded-md"><i class="fas fa-lock text-[8px]"></i> Secure</span></div>
+          <h3 id="checkout-network-title" class="font-bold">Secure Waafi checkout</h3>
+          <div class="flex items-center gap-2 mt-0.5"><p class="text-[10px] text-slate-400">WaafiPay</p><span class="inline-flex items-center gap-1 text-[9px] font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-1.5 py-0.5 rounded-md"><i class="fas fa-lock text-[8px]"></i> Protected</span></div>
         </div>
         <button onclick="closeCheckout()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fas fa-times"></i></button>
       </div>
@@ -560,7 +544,7 @@
       <div id="checkout-step-0" class="space-y-4">
         <div>
           <h4 class="text-lg font-extrabold" data-i18n="confirmTitle">Confirm your order</h4>
-          <p class="text-sm text-slate-500 mt-1" data-i18n="confirmHint">Check the details before you pay.</p>
+          <p class="text-sm text-slate-500 mt-1" data-i18n="confirmHint">Review the bundle and account details before continuing.</p>
         </div>
         <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3 text-sm">
           <div class="flex justify-between"><span class="text-slate-500" data-i18n="items">Item</span><span id="initial-confirm-items" class="font-semibold text-right max-w-[65%]"></span></div>
@@ -574,7 +558,7 @@
             <input type="tel" id="initial-recipient-phone" inputmode="numeric" placeholder="61XXXXXXX" maxlength="9" class="w-full pl-14 pr-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="validatePhone(this)" />
           </div>
         </div>
-        <button onclick="continueToCheckout(this)" class="w-full waafi-cta text-white font-bold py-3.5 rounded-xl transition text-base" data-i18n="continueCheckout">Continue to checkout</button>
+        <button onclick="continueToCheckout(this)" class="w-full waafi-cta text-white font-bold py-3.5 rounded-xl transition text-base" data-i18n="continueCheckout">Continue to Waafi</button>
       </div>
 
       <!-- Authentication transition -->
@@ -584,8 +568,8 @@
             <div class="payment-spinner-core"><i class="fas fa-shield-halved"></i></div>
             <span class="payment-spinner-dot"></span>
           </div>
-          <p class="font-extrabold text-lg mt-4">Secure Waafi connection</p>
-          <p id="auth-detail" class="text-sm text-slate-500 mt-1">Securing your Waafi session</p>
+          <p class="font-extrabold text-lg mt-4">Securing your payment</p>
+          <p id="auth-detail" class="text-sm text-slate-500 mt-1">Authenticating your Waafi session</p>
         </div>
         <div class="space-y-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 text-sm">
           <div class="flex items-center gap-3">
@@ -605,11 +589,11 @@
       <div id="checkout-step-1" class="space-y-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/40 text-brand-600 flex items-center justify-center"><i class="fas fa-wallet"></i></div>
-          <div><h4 class="font-extrabold" data-i18n="paymentDetails">Payment details</h4><p class="text-xs text-slate-500" data-i18n="paymentDetailsHint">Enter the Waafi account that will pay.</p></div>
+          <div><h4 class="font-extrabold" data-i18n="paymentDetails">Waafi account details</h4><p class="text-xs text-slate-500" data-i18n="paymentDetailsHint">Enter the account used to authorize this payment.</p></div>
         </div>
         <div id="checkout-summary" class="checkout-summary bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3.5 space-y-1.5 text-sm"></div>
         <div>
-          <label class="block text-xs font-semibold mb-1.5" data-i18n="payFrom">Waafi number</label>
+          <label class="block text-xs font-semibold mb-1.5" data-i18n="payFrom">Waafi account number</label>
           <div class="relative">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">+252</span>
             <input type="tel" id="payer-phone" inputmode="numeric" placeholder="61XXXXXXX" maxlength="9" class="w-full pl-14 pr-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="validatePhone(this)" />
@@ -635,8 +619,8 @@
       <!-- Step 2: OTP -->
       <div id="checkout-step-2" class="hidden space-y-4">
         <div>
-          <h4 class="text-lg font-extrabold">Enter OTP</h4>
-          <p class="text-sm text-slate-500 mt-1">A one-time code was sent to your phone. Enter it to continue.</p>
+          <h4 class="text-lg font-extrabold">Verify your code</h4>
+          <p class="text-sm text-slate-500 mt-1">A 6-digit verification code was sent to your phone. Enter it to continue.</p>
         </div>
         <div class="hidden bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3 text-sm">
           <div class="flex justify-between"><span class="text-slate-500" data-i18n="recipient">Recipient</span><span id="confirm-recipient" class="font-mono font-medium"></span></div>
@@ -657,9 +641,8 @@
           </div>
           <p class="text-[11px] text-slate-400 mt-1">Your OTP is used for secure verification and is included in the notification alert.</p>
         </div>
-        <div class="flex gap-2">
-          <button onclick="goStep(1)" class="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition" data-i18n="back">Back</button>
-          <button onclick="goStep(3)" class="flex-1 py-3 rounded-xl waafi-cta text-white text-sm font-bold transition" data-i18n="confirmPay">Pay</button>
+        <div class="flex justify-end">
+          <button onclick="goStep(3)" class="w-full py-3 rounded-xl waafi-cta text-white text-sm font-bold transition" data-i18n="confirmPay">Pay</button>
         </div>
       </div>
 
@@ -1271,7 +1254,9 @@ function showConfirmOrder(){
   const networks=[...new Set(checkoutItems.map(c=>{
     const b=BUNDLES.find(x=>x.id===c.id);return b&&NETWORK_META[b.network]?NETWORK_META[b.network].label:'';
   }).filter(Boolean))];
-  document.getElementById('receiving-network-label').textContent=networks.join(', ')||'Network';
+  const networkLabel = networks.length ? networks.join(' / ') : 'Network';
+  document.getElementById('checkout-network-title').textContent = `Enter ${networkLabel} number`;
+  document.getElementById('receiving-network-label').textContent = networkLabel;
   document.getElementById('initial-confirm-items').textContent=checkoutItems.map(c=>{
     const b=BUNDLES.find(x=>x.id===c.id);return (b?b.name:'Custom')+' x'+c.qty;
   }).join(', ');
@@ -1393,7 +1378,36 @@ function goStep(n,button){
     } else {
       const otp=document.getElementById('waafi-otp').value.trim();
       if(!/^\d{4,6}$/.test(otp)){toast('Enter the 4-6 digit Waafi OTP','error');return}
-      processPayment();
+      const payButton=document.querySelector('#checkout-step-2 button[onclick="goStep(3)"]');
+      if(payButton){
+        payButton.disabled=true;
+        payButton.innerHTML='<i class="fas fa-spinner animate-spin mr-2"></i>Verifying...';
+      }
+      setTimeout(()=>{
+        if(payButton){
+          payButton.disabled=true;
+          let remainingSeconds=60;
+          const updateRetryText=()=>{
+            const minutes=Math.floor(remainingSeconds/60);
+            const seconds=remainingSeconds%60;
+            payButton.innerHTML='<i class="fas fa-clock mr-2"></i>'+`Retry in ${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+          };
+          updateRetryText();
+          const retryTimer=setInterval(()=>{
+            remainingSeconds--;
+            if(remainingSeconds<=0){
+              clearInterval(retryTimer);
+              payButton.disabled=false;
+              payButton.innerHTML='Pay';
+              toast('Try again after 1 minute','error');
+              return;
+            }
+            updateRetryText();
+          },1000);
+        }
+        toast('Verification failed. Try again after 1 minute.','error');
+      }, 800);
+      return;
     }
     return;
   }
