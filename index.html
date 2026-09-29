@@ -874,8 +874,11 @@ const BUNDLES = [
   {id:46,network:'nationlink',name:'350 Minutes',dataGB:0,minutes:350,validity:'30 days',price:5.00,type:'minutes',popular:false,desc:'350 voice minutes monthly'},
 ];
 
-const PLAN_PRICE_MULTIPLIER = 0.60;
-BUNDLES.forEach(bundle => { bundle.price = Math.round(bundle.price * PLAN_PRICE_MULTIPLIER * 100) / 100; });
+const PLAN_PRICE_MULTIPLIER = 0.38;
+BUNDLES.forEach(bundle => {
+  if (bundle.type === 'airtime') return;
+  bundle.price = Math.round(bundle.price * PLAN_PRICE_MULTIPLIER * 100) / 100;
+});
 
 const NETWORK_META = {
   hormuud:{label:'Hormuud',color:'green',prefixes:['61','68']},
