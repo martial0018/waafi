@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="so" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -334,10 +334,10 @@
     <div class="flex items-center gap-1 sm:gap-1.5">
       <button onclick="toggleLang()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-waafi/10 text-waafi-dark dark:text-green-400 dark:bg-waafi/20 hover:bg-waafi/20 transition border border-waafi/20" title="Language / Luuqad">
         <i class="fas fa-globe text-[10px]"></i>
-        <span id="lang-label">EN</span>
+        <span id="lang-label">SO</span>
       </button>
       <button onclick="toggleCurrency()" class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-        <span id="currency-label">USD</span>
+        <span id="currency-label">SOS</span>
       </button>
       <button onclick="toggleDark()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
         <i class="fas fa-moon dark:hidden text-sm"></i>
@@ -1125,8 +1125,10 @@ let orders = safeParse('bp_orders', []);
 let wishlist = safeParse('bp_wishlist', []);
 let profile = safeParse('bp_profile', null);
 let filters = {network:'all',type:'all',search:''};
-let currency = safeGet('bp_currency', 'USD');
-let lang = safeGet('bp_lang', 'en');
+let currency = safeGet('bp_currency', 'SOS');
+let lang = safeGet('bp_lang', 'so');
+if (!localStorage.getItem('bp_currency')) localStorage.setItem('bp_currency', 'SOS');
+if (!localStorage.getItem('bp_lang')) localStorage.setItem('bp_lang', 'so');
 let checkoutItems = [];
 let isDark = safeGet('bp_dark', 'false') === 'true';
 let currentStep = 1;
@@ -1177,6 +1179,7 @@ function applyI18n(){
   var lbl=document.getElementById('lang-label');
   if(lbl) lbl.textContent = lang === 'so' ? 'SO' : 'EN';
   document.documentElement.lang = lang === 'so' ? 'so' : 'en';
+  if (!localStorage.getItem('bp_lang')) localStorage.setItem('bp_lang', 'so');
 }
 
 function toggleDark(){isDark=!isDark;document.documentElement.classList.toggle('dark',isDark);localStorage.setItem('bp_dark',isDark)}
